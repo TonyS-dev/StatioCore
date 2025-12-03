@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { userService } from '../../services/userService';
-import { PaymentMethod, SpotType } from '../../types';
-import type { ParkingSession, ParkingSpot, CheckInRequest, ApiError } from '../../types';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
-import { Button } from '../../components/ui/button';
-import { Label } from '../../components/ui/label';
-import { Badge } from '../../components/ui/badge';
-import { Input } from '../../components/ui/input';
+import { userService } from '@/services/userService';
+import { PaymentMethod, SpotType } from '@/types';
+import type { ParkingSession, ParkingSpot, CheckInRequest, ApiError } from '@/types';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import {
   Dialog,
   DialogContent,
@@ -16,17 +16,16 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '../../components/ui/dialog';
+} from '@/components/ui/dialog';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../../components/ui/select';
-import { navigateWithAnimation } from '../../lib/navigateWithAnimation';
-import { formatDuration } from '../../lib/formatDuration';
-import { useErrorHandler } from '../../hooks/useErrorHandler';
+} from '@/components/ui/select';
+import { navigateWithAnimation } from '@/lib/navigateWithAnimation';
+import { formatDuration } from '@/lib/formatDuration';
 import {
   Table,
   TableBody,
@@ -34,10 +33,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '../../components/ui/table';
+} from '@/components/ui/table';
 import { Clock, MapPin, CreditCard, Receipt, AlertCircle, LogIn } from 'lucide-react';
-import { useToast } from '../../components/ui/toast';
-import { useAuthValidation } from '../../hooks/useAuth';
+import { useToast } from '@/components/ui/toast';
+import { useAuthValidation } from '@/hooks/useAuth';
 
 // Check-in Section Component
 interface CheckInSectionProps {
@@ -50,7 +49,6 @@ interface CheckInSectionProps {
 const CheckInSection = ({ preSelectedSpot, hasReservation, activeSession, location }: CheckInSectionProps) => {
   const queryClient = useQueryClient();
   const toast = useToast();
-  const errorHandler = useErrorHandler();
   const [selectedSpot, setSelectedSpot] = useState<ParkingSpot | null>(null);
   const [vehicleNumber, setVehicleNumber] = useState('');
   const [checkInDialog, setCheckInDialog] = useState(false);
@@ -61,7 +59,7 @@ const CheckInSection = ({ preSelectedSpot, hasReservation, activeSession, locati
       // Check if user already has an active session
       if (activeSession) {
         toast.push({
-          message: errorHandler.humanize('User already has an active session', 'checkin'),
+          message: 'User already has an active session. Please check out before checking in to another spot.',
           variant: 'error',
           duration: 6000
         });
@@ -118,7 +116,7 @@ const CheckInSection = ({ preSelectedSpot, hasReservation, activeSession, locati
       window.history.replaceState({}, document.title);
     },
     onError: (error: ApiError) => {
-      const friendlyError = errorHandler.humanize(error, 'checkin');
+      const friendlyError = error.message || 'Failed to check in. Please try again.';
       toast.push({
         message: friendlyError,
         variant: 'error',
@@ -294,7 +292,6 @@ const ParkingManagement = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const toast = useToast();
-  const errorHandler = useErrorHandler();
   const [selectedSession, setSelectedSession] = useState<ParkingSession | null>(null);
   const [checkoutDialog, setCheckoutDialog] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(PaymentMethod.CREDIT_CARD);

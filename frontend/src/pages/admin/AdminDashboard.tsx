@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import { adminService } from '../../services/adminService';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
+import { adminService } from '@/services/adminService';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   ParkingCircle,
   CheckCircle,
@@ -11,7 +11,7 @@ import {
   TrendingUp,
   Building as BuildingIcon,
 } from 'lucide-react';
-import type { BuildingStats } from '../../types';
+import type { BuildingStats } from '@/types';
 
 const AdminDashboard = () => {
   const { data: dashboard, isLoading, error } = useQuery({
@@ -266,7 +266,7 @@ const AdminDashboard = () => {
                     <div className="flex items-center justify-between">
                       <p className="text-sm font-medium">{activity.action}</p>
                       <p className="text-xs text-gray-400">
-                        {new Date(activity.timestamp).toLocaleString()}
+                        {new Date(activity.createdAt).toLocaleString()}
                       </p>
                     </div>
                     <p className="text-xs text-gray-600">{activity.userEmail}</p>

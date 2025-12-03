@@ -1,43 +1,49 @@
-// ============= ENUMS =============
-export enum Role {
-  ADMIN = 'ADMIN',
-  USER = 'USER'
-}
+// ============= ENUMS AS CONST =============
+export const Role = {
+  ADMIN: 'ADMIN',
+  USER: 'USER'
+} as const;
+export type Role = typeof Role[keyof typeof Role];
 
-export enum SpotType {
-  STANDARD = 'STANDARD',
-  VIP = 'VIP',
-  HANDICAP = 'HANDICAP',
-  EV_CHARGING = 'EV_CHARGING'
-}
+export const SpotType = {
+  STANDARD: 'STANDARD',
+  VIP: 'VIP',
+  HANDICAP: 'HANDICAP',
+  EV_CHARGING: 'EV_CHARGING'
+} as const;
+export type SpotType = typeof SpotType[keyof typeof SpotType];
 
-export enum SpotStatus {
-  AVAILABLE = 'AVAILABLE',
-  OCCUPIED = 'OCCUPIED',
-  RESERVED = 'RESERVED',
-  MAINTENANCE = 'MAINTENANCE'
-}
+export const SpotStatus = {
+  AVAILABLE: 'AVAILABLE',
+  OCCUPIED: 'OCCUPIED',
+  RESERVED: 'RESERVED',
+  MAINTENANCE: 'MAINTENANCE'
+} as const;
+export type SpotStatus = typeof SpotStatus[keyof typeof SpotStatus];
 
-export enum ReservationStatus {
-  PENDING = 'PENDING',
-  ACTIVE = 'ACTIVE',
-  COMPLETED = 'COMPLETED',
-  CANCELLED = 'CANCELLED'
-}
+export const ReservationStatus = {
+  PENDING: 'PENDING',
+  ACTIVE: 'ACTIVE',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED'
+} as const;
+export type ReservationStatus = typeof ReservationStatus[keyof typeof ReservationStatus];
 
-export enum PaymentMethod {
-  CASH = 'CASH',
-  CREDIT_CARD = 'CREDIT_CARD',
-  DEBIT_CARD = 'DEBIT_CARD',
-  UPI = 'UPI'
-}
+export const PaymentMethod = {
+  CASH: 'CASH',
+  CREDIT_CARD: 'CREDIT_CARD',
+  DEBIT_CARD: 'DEBIT_CARD',
+  UPI: 'UPI'
+} as const;
+export type PaymentMethod = typeof PaymentMethod[keyof typeof PaymentMethod];
 
-export enum PaymentStatus {
-  PENDING = 'PENDING',
-  COMPLETED = 'COMPLETED',
-  FAILED = 'FAILED',
-  REFUNDED = 'REFUNDED'
-}
+export const PaymentStatus = {
+  PENDING: 'PENDING',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED',
+  REFUNDED: 'REFUNDED'
+} as const;
+export type PaymentStatus = typeof PaymentStatus[keyof typeof PaymentStatus];
 
 // ============= USER & AUTH =============
 export interface User {
@@ -310,3 +316,9 @@ export interface ApiError {
   timestamp?: string;
   path?: string;
 }
+
+// ============= TYPE ALIASES =============
+export type UserRole = Role;
+export type Spot = ParkingSpot;
+export type FeeCalculation = FeeCalculationResponse;
+

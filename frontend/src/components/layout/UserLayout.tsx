@@ -1,6 +1,6 @@
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
-import { useAuthStore } from '../../store/authStore';
-import { Button } from '../ui/button';
+import { useAuthStore } from '@/store/authStore';
+import { Button } from '@/components/ui/button';
 import { Car, LayoutDashboard, ParkingCircle, Calendar, LogIn, LogOut } from 'lucide-react';
 
 const UserLayout = () => {

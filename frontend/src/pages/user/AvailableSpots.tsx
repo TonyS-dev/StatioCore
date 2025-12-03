@@ -1,20 +1,20 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { userService } from '../../services/userService';
-import { api } from '../../services/api';
-import { SpotType } from '../../types';
-import type { ParkingSpot } from '../../types';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
-import { Button } from '../../components/ui/button';
-import { Label } from '../../components/ui/label';
+import { useNavigate } from 'react-router-dom';
+import { userService } from '@/services/userService';
+import { api } from '@/services/api';
+import { SpotType } from '@/types';
+import type { ParkingSpot } from '@/types';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../../components/ui/select';
+} from '@/components/ui/select';
 import {
   Dialog,
   DialogContent,
@@ -22,10 +22,9 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '../../components/ui/dialog';
-import { Badge } from '../../components/ui/badge';
+} from '@/components/ui/dialog';
+import { Badge } from '@/components/ui/badge';
 import {
-  ParkingCircle,
   Filter,
   MapPin,
   DollarSign,
@@ -34,15 +33,12 @@ import {
   CheckCircle,
   LogIn
 } from 'lucide-react';
-import { useToast } from '../../components/ui/toast';
-import { navigateWithAnimation } from '../../lib/navigateWithAnimation';
-import { useErrorHandler } from '../../hooks/useErrorHandler';
+import { useToast } from '@/components/ui/toast';
+import { navigateWithAnimation } from '@/lib/navigateWithAnimation';
 
 const AvailableSpots = () => {
   const navigate = useNavigate();
   const toast = useToast();
-  const location = useLocation();
-  const errorHandler = useErrorHandler();
   const [buildingFilter, setBuildingFilter] = useState<string>('all');
   const [typeFilter, setTypeFilter] = useState<string>('all');
   const [selectedSpotForCheckIn, setSelectedSpotForCheckIn] = useState<ParkingSpot | null>(null);
@@ -93,7 +89,7 @@ const AvailableSpots = () => {
     // If user has an active session, show error and prevent check-in
     if (activeSession) {
       toast.push({
-        message: errorHandler.humanize('User already has an active session', 'checkin'),
+        message: 'User already has an active session. Please check out before checking in to another spot.',
         variant: 'error',
         duration: 6000
       });

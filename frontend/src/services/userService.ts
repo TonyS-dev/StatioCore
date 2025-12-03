@@ -1,5 +1,6 @@
 import { api } from './api';
 import type {
+  Building,
   ParkingSpot,
   SpotFilters,
   CheckInRequest,
@@ -20,6 +21,11 @@ export const userService = {
   },
 
   // Parking Spots
+  async getBuildings(): Promise<Building[]> {
+    const response = await api.get<Building[]>('/buildings');
+    return response.data;
+  },
+
   async getAvailableSpots(filters?: SpotFilters): Promise<ParkingSpot[]> {
     const params = new URLSearchParams();
     if (filters?.buildingId) params.append('buildingId', filters.buildingId);
@@ -39,6 +45,11 @@ export const userService = {
   async getMyReservations(): Promise<Reservation[]> {
     const response = await api.get<Reservation[]>('/reservations');
     return response.data;
+  },
+
+  // Alias for parkingStore compatibility
+  async getReservations(): Promise<Reservation[]> {
+    return this.getMyReservations();
   },
 
   async cancelReservation(reservationId: string): Promise<void> {
@@ -72,6 +83,11 @@ export const userService = {
   async getMySessions(): Promise<ParkingSession[]> {
     const response = await api.get<ParkingSession[]>('/parking/sessions/my');
     return response.data;
+  },
+
+  // Alias for parkingStore compatibility
+  async getActiveSessions(): Promise<ParkingSession[]> {
+    return this.getMySessions();
   },
 
   // Checkout & Payment

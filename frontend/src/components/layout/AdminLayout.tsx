@@ -1,15 +1,21 @@
-import { Outlet, Link, useNavigate } from 'react-router-dom';
-import { useAuthStore } from '../../store/authStore';
-import { Button } from '../ui/button';
+import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
+import { useAuthStore } from '@/store/authStore';
+import { Button } from '@/components/ui/button';
 import { Shield, LayoutDashboard, Building, Users, FileText, LogOut } from 'lucide-react';
 
 const AdminLayout = () => {
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = () => {
     logout();
     navigate('/login');
+  };
+
+  // Helper function to check if a path is active
+  const isActivePath = (path: string) => {
+    return location.pathname === path || location.pathname.startsWith(path + '/');
   };
 
   return (
@@ -45,28 +51,44 @@ const AdminLayout = () => {
           <div className="flex space-x-1">
             <Link
               to="/admin/dashboard"
-              className="flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:text-teal-600 hover:bg-gray-50 border-b-2 border-transparent hover:border-teal-600 transition-colors"
+              className={`flex items-center px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
+                isActivePath('/admin/dashboard')
+                  ? 'text-teal-600 bg-teal-50 border-teal-600'
+                  : 'text-gray-700 border-transparent hover:text-teal-600 hover:bg-gray-50 hover:border-teal-600'
+              }`}
             >
               <LayoutDashboard className="h-4 w-4 mr-2" />
               Dashboard
             </Link>
             <Link
               to="/admin/buildings"
-              className="flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:text-teal-600 hover:bg-gray-50 border-b-2 border-transparent hover:border-teal-600 transition-colors"
+              className={`flex items-center px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
+                isActivePath('/admin/buildings')
+                  ? 'text-teal-600 bg-teal-50 border-teal-600'
+                  : 'text-gray-700 border-transparent hover:text-teal-600 hover:bg-gray-50 hover:border-teal-600'
+              }`}
             >
               <Building className="h-4 w-4 mr-2" />
               Parking Lot Management
             </Link>
             <Link
               to="/admin/users"
-              className="flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:text-teal-600 hover:bg-gray-50 border-b-2 border-transparent hover:border-teal-600 transition-colors"
+              className={`flex items-center px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
+                isActivePath('/admin/users')
+                  ? 'text-teal-600 bg-teal-50 border-teal-600'
+                  : 'text-gray-700 border-transparent hover:text-teal-600 hover:bg-gray-50 hover:border-teal-600'
+              }`}
             >
               <Users className="h-4 w-4 mr-2" />
               Users
             </Link>
             <Link
               to="/admin/logs"
-              className="flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:text-teal-600 hover:bg-gray-50 border-b-2 border-transparent hover:border-teal-600 transition-colors"
+              className={`flex items-center px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
+                isActivePath('/admin/logs')
+                  ? 'text-teal-600 bg-teal-50 border-teal-600'
+                  : 'text-gray-700 border-transparent hover:text-teal-600 hover:bg-gray-50 hover:border-teal-600'
+              }`}
             >
               <FileText className="h-4 w-4 mr-2" />
               Activity Logs
