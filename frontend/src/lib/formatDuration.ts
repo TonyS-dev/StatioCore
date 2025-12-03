@@ -4,11 +4,12 @@
  * @returns Formatted duration string (e.g., "2h 30min", "45min", "< 1min")
  */
 export function formatDuration(minutes?: number | null): string {
-  if (!minutes || minutes <= 0) {
+  // Treat null/undefined and negative values as unavailable
+  if (minutes === null || minutes === undefined || minutes < 0) {
     return '-';
   }
 
-  // For very short durations (less than 1 minute)
+  // For very short durations (less than 1 minute, including 0)
   if (minutes < 1) {
     return '< 1min';
   }
@@ -50,4 +51,3 @@ export function formatDurationFromTimestamps(
 
   return formatDuration(diffMins);
 }
-

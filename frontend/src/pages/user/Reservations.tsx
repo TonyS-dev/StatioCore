@@ -85,7 +85,7 @@ const Reservations = () => {
   });
 
   // Fetch user's reservations
-  const { data: reservations, isLoading: loadingReservations, error: reservationsError } = useQuery({
+  const { data: reservations, error: reservationsError } = useQuery({
     queryKey: ['myReservations'],
     queryFn: () => userService.getMyReservations(),
     refetchInterval: 15000,
@@ -151,6 +151,24 @@ const Reservations = () => {
     },
   });
 
+  // Check-in mutation (for reservations within 1 hour)
+  const checkInMutation = useMutation({
+    mutationFn: (data: { spotId: string; vehicleNumber: string }) =>
+      userService.checkIn(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['myReservations'] });
+      queryClient.invalidateQueries({ queryKey: ['userDashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['availableSpots'] });
+      queryClient.invalidateQueries({ queryKey: ['mySessions'] });
+      toast.push({ message: 'Checked in successfully.', variant: 'success' });
+      // Optionally navigate to parking management or sessions view
+      setTimeout(() => navigate('/user/parking-management', { replace: true }), 200);
+    },
+    onError: (error: Error) => {
+      toast.push({ message: `Check-in failed: ${error.message}`, variant: 'error' });
+    },
+  });
+
   const handleSpotClick = (spot: ParkingSpot) => {
     setSelectedSpot(spot);
     setReserveDialog(true);
@@ -198,10 +216,7 @@ const Reservations = () => {
   // Determine active reservations - show PENDING and ACTIVE (exclude CANCELLED and COMPLETED)
   const activeReservations = useMemo(() => {
     return (reservations || []).filter((r: Reservation) =>
-      r.status === ReservationStatus.PENDING ||
-      r.status === ReservationStatus.ACTIVE ||
-      r.status === 'PENDING' ||
-      r.status === 'ACTIVE'
+      r.status === ReservationStatus.PENDING || r.status === ReservationStatus.ACTIVE
     );
   }, [reservations]);
 
@@ -230,7 +245,8 @@ const Reservations = () => {
   // Reset countdown when dialog opens/closes
   useEffect(() => {
     if (reserveDialog) {
-      setRedirectCountdown(5);
+      // avoid synchronous setState in effect which can trigger cascading renders
+      setTimeout(() => setRedirectCountdown(5), 0);
     }
   }, [reserveDialog]);
 
@@ -260,12 +276,10 @@ const Reservations = () => {
                   className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50"
                 >
                   <div className="flex-1">
-                    <div className="font-semibold text-lg">
-                      Spot {reservation.spotNumber || reservation.spot?.spotNumber}
-                    </div>
+                    <div className="font-semibold text-lg">Spot {reservation.spotNumber}</div>
                     <div className="text-sm text-gray-600 flex items-center mt-1">
                       <MapPin className="h-3 w-3 mr-1" />
-                      {reservation.buildingName || reservation.spot?.buildingName} - Floor {reservation.floorNumber || reservation.spot?.floorNumber}
+                      {reservation.buildingName} - Floor {reservation.floorNumber}
                     </div>
                     <div className="text-sm text-gray-600 flex items-center mt-1">
                       <Clock className="h-3 w-3 mr-1" />
@@ -280,14 +294,57 @@ const Reservations = () => {
                       Created: {new Date(reservation.createdAt).toLocaleString()}
                     </div>
                   </div>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => cancelReservationMutation.mutate(reservation.id)}
-                    disabled={cancelReservationMutation.isPending}
-                  >
-                    Cancel
-                  </Button>
+                  {/* Actions: Check In (when within 1 hour before start) and Cancel */}
+                  <div className="flex flex-col items-end space-y-2">
+                    <div className="flex space-x-2">
+                      {(() => {
+                        const spotId = reservation.spotId;
+                        const startMs = new Date(reservation.startTime).getTime();
+                        const oneHourBefore = startMs - 60 * 60 * 1000;
+                        const now = Date.now();
+                        const canCheckIn = reservation.status === ReservationStatus.PENDING && now >= oneHourBefore;
+
+                        if (canCheckIn) {
+                          return (
+                            <Button
+                              size="sm"
+                              onClick={() => {
+                                if (!spotId) {
+                                  toast.push({ message: 'Missing spot information for check-in.', variant: 'error' });
+                                  return;
+                                }
+                                // Use reservation vehicle number if available; otherwise prompt the user
+                                let vehicle = reservation.vehicleNumber;
+                                if (!vehicle) {
+                                  vehicle = window.prompt('Enter vehicle number to check in:') || '';
+                                }
+                                if (!vehicle) {
+                                  toast.push({ message: 'Vehicle number is required to check in.', variant: 'warning' });
+                                  return;
+                                }
+                                checkInMutation.mutate({ spotId, vehicleNumber: vehicle });
+                              }}
+                              disabled={checkInMutation.isPending}
+                            >
+                              Check In
+                            </Button>
+                          );
+                        }
+                        return null;
+                      })()}
+
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => cancelReservationMutation.mutate(reservation.id)}
+                        disabled={cancelReservationMutation.isPending}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                    {/* Show reservation status */}
+                    <div className="text-xs text-gray-500">{reservation.status}</div>
+                  </div>
                 </div>
               ))}
             </div>
@@ -546,5 +603,4 @@ const Reservations = () => {
 };
 
 export default Reservations;
-
 
