@@ -44,6 +44,11 @@ public class AdminController {
         return ResponseEntity.ok(adminService.getDashboard());
     }
 
+    @GetMapping("/buildings")
+    public ResponseEntity<java.util.List<BuildingResponse>> getBuildings() {
+        return ResponseEntity.ok(adminService.getAllBuildings());
+    }
+
     @PostMapping("/buildings")
     public ResponseEntity<BuildingResponse> createBuilding(@Valid @RequestBody BuildingRequest request) {
         Building building = Building.builder().name(request.getName()).address(request.getAddress()).build();
