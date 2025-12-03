@@ -15,8 +15,8 @@ public class StandardFeeStrategy implements IFeeCalculationStrategy {
 
     @Override
     public BigDecimal calculateFee(Duration duration) {
-        if (duration == null || duration.isNegative() || duration.isZero()) {
-            return BigDecimal.ZERO.setScale(2);
+        if (!isValidDuration(duration)) {
+            return zeroFee();
         }
         // Calculate hours as fractional (minutes / 60)
         long minutes = duration.toMinutes();
@@ -24,4 +24,3 @@ public class StandardFeeStrategy implements IFeeCalculationStrategy {
         return hours.multiply(RATE_PER_HOUR).setScale(2, RoundingMode.HALF_UP);
     }
 }
-

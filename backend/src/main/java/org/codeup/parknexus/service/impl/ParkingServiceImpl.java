@@ -6,6 +6,7 @@ import org.codeup.parknexus.domain.ParkingSpot;
 import org.codeup.parknexus.domain.User;
 import org.codeup.parknexus.domain.enums.SpotStatus;
 import org.codeup.parknexus.domain.enums.SessionStatus;
+import org.codeup.parknexus.domain.enums.SpotType;
 import org.codeup.parknexus.exception.ConflictException;
 import org.codeup.parknexus.exception.ResourceNotFoundException;
 import org.codeup.parknexus.repository.IParkingSessionRepository;
@@ -13,15 +14,16 @@ import org.codeup.parknexus.repository.IParkingSpotRepository;
 import org.codeup.parknexus.service.IActivityLogService;
 import org.codeup.parknexus.service.IParkingService;
 import org.codeup.parknexus.service.IPaymentService;
+import org.codeup.parknexus.service.strategy.FeeCalculatorFactory;
+import org.codeup.parknexus.service.strategy.IFeeCalculationStrategy;
 import org.codeup.parknexus.domain.enums.PaymentMethod;
 import org.codeup.parknexus.web.dto.user.CheckOutResponse;
 import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
+import java.time.Duration;
 import java.time.OffsetDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,6 +35,7 @@ public class ParkingServiceImpl implements IParkingService {
     private final IParkingSessionRepository sessionRepository;
     private final IActivityLogService logService;
     private final IPaymentService paymentService;
+    private final FeeCalculatorFactory feeCalculatorFactory;
 
     @Override
     public ParkingSession checkIn(User user, UUID spotId) {
@@ -67,13 +70,17 @@ public class ParkingServiceImpl implements IParkingService {
         OffsetDateTime now = OffsetDateTime.now();
         session.setCheckOutTime(now);
 
-        long durationMinutes = ChronoUnit.MINUTES.between(session.getCheckInTime(), now);
-        BigDecimal ratePerMinute = new BigDecimal("10").divide(new BigDecimal("60"), 4, RoundingMode.HALF_UP);
-        BigDecimal fee = ratePerMinute.multiply(BigDecimal.valueOf(durationMinutes)).setScale(2, RoundingMode.HALF_UP);
+        Duration duration = Duration.between(session.getCheckInTime(), now);
+
+        // Select fee strategy based on spot type
+        ParkingSpot spot = session.getSpot();
+        String strategyKey = getStrategyKeyForSpotType(spot.getType());
+        IFeeCalculationStrategy strategy = feeCalculatorFactory.getStrategy(strategyKey);
+        BigDecimal fee = strategy.calculateFee(duration);
+
         session.setAmountDue(fee);
         session.setStatus(SessionStatus.COMPLETED);
 
-        ParkingSpot spot = session.getSpot();
         spot.setStatus(SpotStatus.AVAILABLE);
         spotRepository.save(spot);
 
@@ -89,7 +96,7 @@ public class ParkingServiceImpl implements IParkingService {
                 .spotId(spot.getId())
                 .checkInTime(session.getCheckInTime().toLocalDateTime())
                 .checkOutTime(now.toLocalDateTime())
-                .durationMinutes(durationMinutes)
+                .durationMinutes(duration.toMinutes())
                 .fee(fee.doubleValue())
                 .build();
     }
@@ -97,5 +104,18 @@ public class ParkingServiceImpl implements IParkingService {
     @Override
     public List<ParkingSpot> getAvailableSpots() {
         return spotRepository.findByStatus(SpotStatus.AVAILABLE);
+    }
+
+    /**
+     * Maps spot type to fee strategy key.
+     */
+    private String getStrategyKeyForSpotType(SpotType spotType) {
+        if (spotType == null) {
+            return "STANDARD";
+        }
+        return switch (spotType) {
+            case VIP -> "VIP";
+            default -> "STANDARD";
+        };
     }
 }
