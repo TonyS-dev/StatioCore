@@ -325,5 +325,3 @@ Notes & mapping to frontend
 OpenAPI / Postman
 -----------------
 - This repo does not include a formal OpenAPI (swagger) spec file, but SpringDoc is present in the backend dependencies and can generate a Swagger UI at runtime (if enabled): typically `/swagger-ui.html` or `/v3/api-docs` depending on SpringDoc configuration.
-
-If you want, I can generate a small OpenAPI YAML from the DTOs and controllers as a follow-up.

@@ -23,6 +23,20 @@ This repository contains the full-stack scaffold with Docker support and local d
 
 ---
 
+## 🖥️ Live Demo
+
+Live URL here:
+
+```
+http://174.138.72.82
+```
+
+---
+
+![App Screenshot](docs/app)
+
+---
+
 ## 📁 Tech Stack
 
 - Frontend
