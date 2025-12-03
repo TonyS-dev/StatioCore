@@ -57,7 +57,6 @@ api.interceptors.response.use(
 
       // If we have a stored token, treat 401 as session expiration
       if (storedToken) {
-        console.warn('Session expired - 401 response from server');
         sessionStorage.removeItem('token');
         sessionStorage.removeItem('user');
 
@@ -72,7 +71,7 @@ api.interceptors.response.use(
 
     // Handle 403 Forbidden - Insufficient permissions
     if (error.response?.status === 403) {
-      console.error('Access denied - insufficient permissions');
+      // Access denied
     }
 
     // IMPORTANT: Pass through the original error object so error handlers

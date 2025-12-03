@@ -27,7 +27,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   setAuth: (token: string, user: User) => {
     // Validate token before setting
     if (!isTokenValid(token)) {
-      console.error('Attempted to set invalid token');
       get().logout();
       return;
     }
@@ -35,7 +34,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     // SECURITY FIX: Extract role from JWT token, not from user object
     const roleFromToken = getRoleFromToken(token);
     if (!roleFromToken) {
-      console.error('Token does not contain valid role');
       get().logout();
       return;
     }
@@ -98,7 +96,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     // SECURITY FIX: Always extract role from JWT token, never trust sessionStorage
     const roleFromToken = getRoleFromToken(token);
     if (!roleFromToken) {
-      console.error('Token does not contain valid role');
       authService.logout();
       set({
         token: null,

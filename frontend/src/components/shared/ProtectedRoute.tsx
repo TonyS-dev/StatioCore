@@ -21,7 +21,6 @@ const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
     // Set up periodic validation (every 30 seconds)
     const interval = setInterval(() => {
       if (!validateAuth()) {
-        console.warn('Session expired or invalid token detected');
         logout();
       }
     }, 30000); // 30 seconds
@@ -39,7 +38,6 @@ const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
   const roleFromToken = getUserRole();
 
   if (!roleFromToken) {
-    console.error('Unable to extract role from token');
     logout();
     return <Navigate to="/login" replace />;
   }

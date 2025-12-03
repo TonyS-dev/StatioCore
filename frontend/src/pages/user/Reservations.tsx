@@ -96,25 +96,12 @@ const Reservations = () => {
   // Show error toast if reservations fail to load
   useEffect(() => {
     if (reservationsError) {
-      console.error('❌ Reservations error:', reservationsError);
       toast.push({
         message: `Failed to load reservations: ${(reservationsError as Error).message}`,
         variant: 'error'
       });
     }
   }, [reservationsError, toast]);
-
-  // Debug: Log reservations data
-  useEffect(() => {
-    if (reservations) {
-      console.log('📋 Reservations received:', reservations);
-      console.log('📊 Total count:', reservations.length);
-      if (reservations.length > 0) {
-        console.log('📝 First reservation:', reservations[0]);
-        console.log('📝 Status:', reservations[0].status);
-      }
-    }
-  }, [reservations]);
 
   // Reserve mutation
   const reserveMutation = useMutation({
@@ -196,7 +183,6 @@ const Reservations = () => {
         },
       });
     }).catch((error) => {
-      console.error('Error checking active session:', error);
       toast.push({
         message: errorHandler.humanize(error, 'checkin'),
         variant: 'error',
