@@ -11,6 +11,7 @@ import org.codeup.parknexus.exception.PaymentException;
 import org.codeup.parknexus.exception.ResourceNotFoundException;
 import org.codeup.parknexus.repository.IPaymentRepository;
 import org.codeup.parknexus.repository.IParkingSessionRepository;
+import org.codeup.parknexus.service.IActivityLogService;
 import org.codeup.parknexus.service.IPaymentService;
 import org.codeup.parknexus.web.dto.user.PaymentResponse;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,7 @@ public class PaymentServiceImpl implements IPaymentService {
 
     private final IPaymentRepository paymentRepository;
     private final IParkingSessionRepository parkingSessionRepository;
+    private final IActivityLogService activityLogService;
 
     // Pricing: $5/hour base rate
     private static final BigDecimal HOURLY_RATE = new BigDecimal("5.00");
@@ -73,6 +75,11 @@ public class PaymentServiceImpl implements IPaymentService {
                 .build();
 
         payment = paymentRepository.save(payment);
+
+        // Log payment activity
+        activityLogService.log(session.getUser(), "PAYMENT_PROCESSED", 
+            String.format("Payment processed successfully. Amount: $%s, Method: %s, Transaction: %s", 
+                payment.getAmount(), method.name(), payment.getTransactionReference()));
 
         log.info("Payment processed successfully: {} for session: {}", payment.getTransactionReference(), sessionId);
 

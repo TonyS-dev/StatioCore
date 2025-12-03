@@ -21,5 +21,8 @@ public interface IUserRepository extends JpaRepository<User, UUID>, JpaSpecifica
 
     // For Admin Dashboard (Filter by role)
     List<User> findByRole(Role role);
+    
+    // Count active users
+    long countByIsActive(boolean isActive);
 }
 

@@ -1,7 +1,6 @@
 package org.codeup.parknexus.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.codeup.parknexus.domain.Payment;
 import org.codeup.parknexus.domain.ParkingSession;
 import org.codeup.parknexus.domain.ParkingSpot;
 import org.codeup.parknexus.domain.User;
@@ -13,7 +12,10 @@ import org.codeup.parknexus.exception.ConflictException;
 import org.codeup.parknexus.exception.ResourceNotFoundException;
 import org.codeup.parknexus.repository.IParkingSessionRepository;
 import org.codeup.parknexus.repository.IParkingSpotRepository;
+import org.codeup.parknexus.repository.IUserRepository;
 import org.codeup.parknexus.repository.specification.ParkingSpotSpecification;
+import org.codeup.parknexus.domain.enums.SessionStatus;
+
 import org.codeup.parknexus.service.IActivityLogService;
 import org.codeup.parknexus.service.IParkingService;
 import org.codeup.parknexus.service.IPaymentService;
@@ -33,6 +35,7 @@ import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -43,13 +46,23 @@ public class ParkingServiceImpl implements IParkingService {
 
     private final IParkingSpotRepository spotRepository;
     private final IParkingSessionRepository sessionRepository;
+    private final IUserRepository userRepository;
     private final IActivityLogService logService;
     private final IPaymentService paymentService;
     private final FeeCalculatorFactory feeCalculatorFactory;
 
     @Override
     @CacheEvict(value = "availableSpots", allEntries = true)
-    public ParkingSession checkIn(User user, UUID spotId) {
+    public ParkingSession checkIn(UUID userId, UUID spotId, String vehicleNumber) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        
+        // Prevent multiple active sessions for the same user
+        Optional<ParkingSession> existingSession = sessionRepository.findByUserIdAndStatus(userId, SessionStatus.ACTIVE);
+        if (existingSession.isPresent()) {
+            throw new ConflictException("You already have an active parking session. Please check out first.");
+        }
+        
         ParkingSpot spot = spotRepository.findById(spotId)
                 .orElseThrow(() -> new ResourceNotFoundException("Spot not found"));
 
@@ -64,6 +77,7 @@ public class ParkingServiceImpl implements IParkingService {
                 .user(user)
                 .spot(spot)
                 .checkInTime(OffsetDateTime.now())
+                .vehicleNumber(vehicleNumber)
                 .status(SessionStatus.ACTIVE)
                 .build();
 
@@ -142,7 +156,7 @@ public class ParkingServiceImpl implements IParkingService {
             session.setCheckOutTime(now);
 
             Duration duration = Duration.between(session.getCheckInTime(), now);
-
+            long durationMinutes = duration.toMinutes();
             // Calculate fee
             ParkingSpot spot = session.getSpot();
             String strategyKey = getStrategyKeyForSpotType(spot.getType());
@@ -155,6 +169,8 @@ public class ParkingServiceImpl implements IParkingService {
             }
 
             session.setAmountDue(fee);
+            session.setDurationMinutes(durationMinutes);
+            // Mark session as completed prior to payment
             session.setStatus(SessionStatus.COMPLETED);
 
             // Free up the spot
@@ -197,7 +213,7 @@ public class ParkingServiceImpl implements IParkingService {
     @Override
     @Cacheable(value = "availableSpots", key = "'all'")
     public List<ParkingSpot> getAvailableSpots() {
-        return spotRepository.findByStatus(SpotStatus.AVAILABLE);
+        return spotRepository.findByStatusAndReservedByIsNull(SpotStatus.AVAILABLE);
     }
 
     @Override
@@ -212,7 +228,13 @@ public class ParkingServiceImpl implements IParkingService {
     @Override
     public List<ParkingSession> getActiveSessions(UUID userId) {
         logger.info("Fetching active sessions for user: {}", userId);
-        return sessionRepository.findAllByUserIdAndStatusOrderByCheckInTimeDesc(userId, "ACTIVE");
+        return sessionRepository.findAllByUserIdAndStatusOrderByCheckInTimeDesc(userId, SessionStatus.ACTIVE);
+    }
+
+    @Override
+    public List<ParkingSession> getUserSessions(UUID userId) {
+        logger.info("Fetching all sessions for user: {}", userId);
+        return sessionRepository.findAllByUserIdOrderByCheckInTimeDesc(userId);
     }
 
     /**

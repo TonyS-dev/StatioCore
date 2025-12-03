@@ -31,8 +31,17 @@ public interface IParkingSpotRepository extends JpaRepository<ParkingSpot, UUID>
 
     List<ParkingSpot> findByStatus(SpotStatus status);
 
+    // Strict availability: AVAILABLE and not reserved
+    List<ParkingSpot> findByStatusAndReservedByIsNull(SpotStatus status);
+    long countByStatusAndReservedByIsNull(SpotStatus status);
+
+    // Find all spots with eager loading of Floor and Building for admin views
+    @Query("SELECT s FROM ParkingSpot s LEFT JOIN FETCH s.floor f LEFT JOIN FETCH f.building LEFT JOIN FETCH s.reservedBy")
+    List<ParkingSpot> findAllWithFloorAndBuilding();
+
     // Count methods for populating response DTOs
     long countByFloorId(UUID floorId);
     long countByFloorIdAndStatus(UUID floorId, SpotStatus status);
     long countByFloorBuildingId(UUID buildingId);
+    long countByFloorBuildingIdAndStatus(UUID buildingId, SpotStatus status);
 }

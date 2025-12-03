@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -31,8 +32,7 @@ public interface IReservationRepository extends JpaRepository<Reservation, UUID>
     """)
     boolean existsOverlappingReservation(
             @Param("spotId") UUID spotId,
-            @Param("startTime") LocalDateTime start,
-            @Param("endTime") LocalDateTime end
+            @Param("startTime") OffsetDateTime start,
+            @Param("endTime") OffsetDateTime end
     );
 }
-

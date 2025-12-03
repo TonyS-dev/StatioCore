@@ -357,9 +357,9 @@ public class DataInitializationConfig {
             log.info("Creating activity logs...");
 
             ActivityLog actLog1 = ActivityLog.builder()
-                    .user(admin1)
-                    .action("USER_LOGIN")
-                    .details("Admin logged in")
+                    .user(user3)
+                    .action("PAYMENT_PROCESSED")
+                    .details("Payment processed successfully")
                     .build();
 
             ActivityLog actLog2 = ActivityLog.builder()
@@ -380,13 +380,7 @@ public class DataInitializationConfig {
                     .details("Admin updated user role for " + user3.getId())
                     .build();
 
-            ActivityLog actLog5 = ActivityLog.builder()
-                    .user(user3)
-                    .action("PAYMENT_PROCESSED")
-                    .details("Payment processed successfully")
-                    .build();
-
-            var savedLogs = activityLogRepository.saveAll(java.util.List.of(actLog1, actLog2, actLog3, actLog4, actLog5));
+            var savedLogs = activityLogRepository.saveAll(java.util.List.of(actLog1, actLog2, actLog3, actLog4));
             log.info("Activity logs created successfully! ({} logs saved)", savedLogs.size());
             log.info("Data initialization completed!");
 

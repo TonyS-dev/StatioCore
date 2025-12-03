@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface IParkingService {
-    ParkingSession checkIn(User user, UUID spotId);
+    ParkingSession checkIn(UUID userId, UUID spotId, String vehicleNumber);
 
     FeeCalculationResponse calculateFee(UUID sessionId);
 
@@ -24,5 +24,7 @@ public interface IParkingService {
     List<ParkingSpot> getAvailableSpots(UUID buildingId, UUID floorId, SpotType type, SpotStatus status);
 
     List<ParkingSession> getActiveSessions(UUID userId);
+
+    List<ParkingSession> getUserSessions(UUID userId);
 }
 

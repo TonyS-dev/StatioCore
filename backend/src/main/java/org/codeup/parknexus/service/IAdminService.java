@@ -2,8 +2,7 @@ package org.codeup.parknexus.service;
 
 import org.codeup.parknexus.domain.User;
 import org.codeup.parknexus.domain.enums.Role;
-import org.codeup.parknexus.web.dto.admin.AdminDashboardResponse;
-import org.codeup.parknexus.web.dto.admin.BuildingResponse;
+import org.codeup.parknexus.web.dto.admin.*;
 
 import java.util.List;
 import java.util.UUID;
@@ -13,5 +12,22 @@ public interface IAdminService {
     List<User> getAllUsers();
     User updateUserRole(UUID userId, Role role);
     List<BuildingResponse> getAllBuildings();
+    
+    // Building CRUD
+    BuildingResponse createBuilding(BuildingRequest request);
+    BuildingResponse updateBuilding(UUID buildingId, BuildingRequest request);
+    void deleteBuilding(UUID buildingId);
+    
+    // Floor CRUD
+    List<FloorResponse> getAllFloors();
+    FloorResponse createFloor(FloorRequest request);
+    FloorResponse updateFloor(UUID floorId, FloorRequest request);
+    void deleteFloor(UUID floorId);
+    
+    // Spot CRUD
+    List<SpotResponse> getAllSpots();
+    SpotResponse createSpot(SpotRequest request);
+    SpotResponse updateSpot(UUID spotId, SpotRequest request);
+    void deleteSpot(UUID spotId);
 }
 

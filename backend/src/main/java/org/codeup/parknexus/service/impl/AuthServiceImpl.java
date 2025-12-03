@@ -7,6 +7,7 @@ import org.codeup.parknexus.exception.BadRequestException;
 import org.codeup.parknexus.exception.UnauthorizedException;
 import org.codeup.parknexus.repository.IUserRepository;
 import org.codeup.parknexus.security.TokenProvider;
+import org.codeup.parknexus.service.IActivityLogService;
 import org.codeup.parknexus.service.IAuthService;
 import org.codeup.parknexus.web.dto.auth.AuthResponse;
 import org.codeup.parknexus.web.dto.auth.LoginRequest;
@@ -26,6 +27,7 @@ public class AuthServiceImpl implements IAuthService {
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final UserMapper userMapper;
+    private final IActivityLogService activityLogService;
 
     @Override
     public AuthResponse register(RegisterRequest request) {
@@ -46,13 +48,16 @@ public class AuthServiceImpl implements IAuthService {
         User user = User.builder()
                 .email(request.getEmail())
                 .passwordHash(passwordEncoder.encode(request.getPassword()))
-                .fullName(request.getEmail()) // Default to email, can be updated later
+                .fullName(request.getFullName())
                 .role(Role.USER)
                 .isActive(true)
                 .createdAt(OffsetDateTime.now())
                 .build();
 
         user = userRepository.save(user);
+
+        // Log user registration
+        activityLogService.log(user, "USER_REGISTERED", "New user account created");
 
         // Generate JWT token
         String token = tokenProvider.generateToken(user);

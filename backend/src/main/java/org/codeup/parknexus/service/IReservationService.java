@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface IReservationService {
-    Reservation createReservation(User user, UUID spotId, OffsetDateTime startTime, Integer durationMinutes);
+    Reservation createReservation(UUID userId, UUID spotId, OffsetDateTime startTime, Integer durationMinutes);
     void cancelReservation(UUID reservationId);
     List<Reservation> getUserReservations(UUID userId);
 }

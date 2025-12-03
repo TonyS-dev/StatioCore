@@ -14,6 +14,9 @@ public class UserSpecification {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
+            // Exclude soft-deleted users
+            predicates.add(criteriaBuilder.isNull(root.get("deletedAt")));
+
             // Filter by role if provided
             if (role != null) {
                 predicates.add(criteriaBuilder.equal(root.get("role"), role));
