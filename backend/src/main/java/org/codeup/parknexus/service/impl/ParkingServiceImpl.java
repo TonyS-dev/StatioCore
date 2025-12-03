@@ -20,6 +20,8 @@ import org.codeup.parknexus.service.strategy.IFeeCalculationStrategy;
 import org.codeup.parknexus.domain.enums.PaymentMethod;
 import org.codeup.parknexus.web.dto.user.CheckOutResponse;
 import org.springframework.stereotype.Service;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import jakarta.transaction.Transactional;
 
 import java.math.BigDecimal;
@@ -39,6 +41,7 @@ public class ParkingServiceImpl implements IParkingService {
     private final FeeCalculatorFactory feeCalculatorFactory;
 
     @Override
+    @CacheEvict(value = "availableSpots", allEntries = true)
     public ParkingSession checkIn(User user, UUID spotId) {
         ParkingSpot spot = spotRepository.findById(spotId)
                 .orElseThrow(() -> new ResourceNotFoundException("Spot not found"));
@@ -64,6 +67,7 @@ public class ParkingServiceImpl implements IParkingService {
     }
 
     @Override
+    @CacheEvict(value = "availableSpots", allEntries = true)
     public CheckOutResponse checkOut(UUID sessionId) {
         ParkingSession session = sessionRepository.findById(sessionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Session not found"));
@@ -103,11 +107,13 @@ public class ParkingServiceImpl implements IParkingService {
     }
 
     @Override
+    @Cacheable(value = "availableSpots", key = "'all'")
     public List<ParkingSpot> getAvailableSpots() {
         return spotRepository.findByStatus(SpotStatus.AVAILABLE);
     }
 
     @Override
+    @Cacheable(value = "availableSpots", key = "{#buildingId, #floorId, #type, #status}")
     public List<ParkingSpot> getAvailableSpots(UUID buildingId, UUID floorId, SpotType type, SpotStatus status) {
         SpotStatus filterStatus = status != null ? status : SpotStatus.AVAILABLE;
         return spotRepository.findAll(

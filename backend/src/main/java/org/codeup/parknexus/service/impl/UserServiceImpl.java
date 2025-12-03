@@ -14,6 +14,7 @@ import org.codeup.parknexus.service.IUserService;
 import org.codeup.parknexus.web.dto.user.DashboardResponse;
 import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
+import org.springframework.cache.annotation.Cacheable;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -28,6 +29,7 @@ public class UserServiceImpl implements IUserService {
     private final IPaymentRepository paymentRepository;
 
     @Override
+    @Cacheable(value = "userDashboard", key = "#userId")
     public DashboardResponse getDashboard(UUID userId) {
         List<Reservation> reservations = reservationRepository.findByUserIdOrderByStartTimeDesc(userId);
         List<ParkingSession> sessions = sessionRepository.findAll();

@@ -8,6 +8,8 @@ import org.codeup.parknexus.service.IAdminService;
 import org.codeup.parknexus.web.dto.admin.AdminDashboardResponse;
 import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 
 import java.util.List;
 import java.util.UUID;
@@ -19,6 +21,7 @@ public class AdminServiceImpl implements IAdminService {
     private final IUserRepository userRepository;
 
     @Override
+    @Cacheable(value = "adminDashboard")
     public AdminDashboardResponse getDashboard() {
         long totalUsers = userRepository.count();
         long admins = userRepository.findByRole(Role.ADMIN).size();
@@ -36,6 +39,7 @@ public class AdminServiceImpl implements IAdminService {
     }
 
     @Override
+    @CacheEvict(value = "adminDashboard", allEntries = true)
     public User updateUserRole(UUID userId, Role role) {
         User user = userRepository.findById(userId).orElseThrow();
         user.setRole(role);

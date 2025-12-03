@@ -30,5 +30,9 @@ public interface IParkingSpotRepository extends JpaRepository<ParkingSpot, UUID>
     List<ParkingSpot> findAvailableByBuilding(@Param("buildingId") UUID buildingId);
 
     List<ParkingSpot> findByStatus(SpotStatus status);
-}
 
+    // Count methods for populating response DTOs
+    long countByFloorId(UUID floorId);
+    long countByFloorIdAndStatus(UUID floorId, SpotStatus status);
+    long countByFloorBuildingId(UUID buildingId);
+}

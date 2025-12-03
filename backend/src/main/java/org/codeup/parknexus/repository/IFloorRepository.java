@@ -14,4 +14,7 @@ public interface IFloorRepository extends JpaRepository<Floor, UUID> {
 
     // Validation: Prevent duplicate floor numbers in the same building
     boolean existsByBuildingIdAndFloorNumber(UUID buildingId, Integer floorNumber);
+
+    // Count methods for populating response DTOs
+    long countByBuildingId(UUID buildingId);
 }
