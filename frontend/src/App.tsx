@@ -1,122 +1,108 @@
+import { useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useAuthStore } from './store/authStore';
+import { Role } from './types';
+import { ToastProvider } from './components/ui/toast';
 
-import { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { useAuthStore } from '@/store/authStore';
-import { ProtectedRoute } from '@/components/ProtectedRoute';
-import { UserRole } from '@/types';
+// Auth Pages
+import LoginPage from './pages/auth/LoginPage';
+import RegisterPage from './pages/auth/RegisterPage';
 
-// Pages
-import { LoginPage } from '@/pages/auth/LoginPage';
-import { RegisterPage } from '@/pages/auth/RegisterPage';
-import { DashboardPage } from '@/pages/user/DashboardPage';
-import { ReservationPage } from '@/pages/user/ReservationPage';
-import { ParkingManagementPage } from '@/pages/user/ParkingManagementPage';
-import { AdminDashboardPage } from '@/pages/admin/AdminDashboardPage';
-import { UserManagementPage } from '@/pages/admin/UserManagementPage';
-import { ParkingSystemManagementPage } from '@/pages/admin/ParkingSystemManagementPage';
-import { LogSystemPage } from '@/pages/admin/LogSystemPage';
+// User Pages
+import UserDashboard from './pages/user/UserDashboard';
+import AvailableSpots from './pages/user/AvailableSpots';
+import Reservations from './pages/user/Reservations';
+import ParkingManagement from './pages/user/ParkingManagement';
 
-function RootRedirect() {
-  const { user } = useAuthStore();
+// Admin Pages
+import AdminDashboard from './pages/admin/AdminDashboard';
+import UserManagement from './pages/admin/UserManagement';
+import ActivityLogs from './pages/admin/ActivityLogs';
+import ParkingLotManagement from './pages/admin/ParkingLotManagement';
 
-  if (!user) {
-    return <Navigate to="/login" replace />;
-  }
+// Layouts
+import UserLayout from './components/layout/UserLayout';
+import AdminLayout from './components/layout/AdminLayout';
 
-  return <Navigate to={user.role === UserRole.ADMIN ? '/admin' : '/dashboard'} replace />;
-}
+// Protected Route Component
+import ProtectedRoute from './components/shared/ProtectedRoute';
+
+// Create React Query client
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 1,
+      staleTime: 30000, // 30 seconds
+    },
+  },
+});
 
 function App() {
-  const { restoreFromStorage } = useAuthStore();
-  const [isRestored, setIsRestored] = useState(false);
+  const { initAuth, isLoading } = useAuthStore();
 
-  // Restore auth from localStorage on app mount
   useEffect(() => {
-    restoreFromStorage();
-    setIsRestored(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    initAuth();
+  }, [initAuth]);
 
-  if (!isRestored) {
-    return <div>Loading...</div>;
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-lg">Loading...</div>
+      </div>
+    );
   }
 
   return (
-    <ErrorBoundary>
-      <Router>
+    <QueryClientProvider client={queryClient}>
+      <ToastProvider>
+      <BrowserRouter>
         <Routes>
-        {/* Auth Routes */}
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
+          {/* Public Routes */}
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
 
-        {/* User Routes */}
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute requiredRole={UserRole.USER}>
-              <DashboardPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/reservations"
-          element={
-            <ProtectedRoute requiredRole={UserRole.USER}>
-              <ReservationPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/parking"
-          element={
-            <ProtectedRoute requiredRole={UserRole.USER}>
-              <ParkingManagementPage />
-            </ProtectedRoute>
-          }
-        />
+          {/* User Routes */}
+          <Route
+            path="/user"
+            element={
+              <ProtectedRoute allowedRoles={[Role.USER]}>
+                <UserLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route path="dashboard" element={<UserDashboard />} />
+            <Route path="spots" element={<AvailableSpots />} />
+            <Route path="reservations" element={<Reservations />} />
+            <Route path="parking-management" element={<ParkingManagement />} />
+            {/* Legacy route redirect */}
+            <Route path="parking" element={<ParkingManagement />} />
+          </Route>
 
-        {/* Admin Routes */}
-        <Route
-          path="/admin"
-          element={
-            <ProtectedRoute requiredRole={UserRole.ADMIN}>
-              <AdminDashboardPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/users"
-          element={
-            <ProtectedRoute requiredRole={UserRole.ADMIN}>
-              <UserManagementPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/parking"
-          element={
-            <ProtectedRoute requiredRole={UserRole.ADMIN}>
-              <ParkingSystemManagementPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/logs"
-          element={
-            <ProtectedRoute requiredRole={UserRole.ADMIN}>
-              <LogSystemPage />
-            </ProtectedRoute>
-          }
-        />
+          {/* Admin Routes */}
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute allowedRoles={[Role.ADMIN]}>
+                <AdminLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path="buildings" element={<ParkingLotManagement />} />
+            <Route path="users" element={<UserManagement />} />
+            <Route path="logs" element={<ActivityLogs />} />
+          </Route>
 
-        {/* Default Routes */}
-        <Route path="/" element={<RootRedirect />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
+          {/* Default Redirects */}
+          <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
-      </Router>
-    </ErrorBoundary>
+      </BrowserRouter>
+      </ToastProvider>
+    </QueryClientProvider>
   );
 }
 
 export default App;
-
