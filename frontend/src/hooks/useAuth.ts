@@ -29,7 +29,6 @@ export const useAuthValidation = () => {
 
   useEffect(() => {
     if (!validateAuth()) {
-      console.warn('Invalid session detected, logging out');
       logout();
       navigate('/login', { replace: true });
     }

@@ -90,7 +90,6 @@ const CheckInSection = ({ preSelectedSpot, hasReservation, activeSession, locati
             data.reservationIds.map((id) => userService.cancelReservation(id))
           );
         } catch (error) {
-          console.error('Failed to cancel reservations after check-in:', error);
           // Don't throw error here - check-in was successful, we just failed to cancel reservations
         }
       }

@@ -21,7 +21,6 @@ const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
     // Set up periodic validation (every 30 seconds)
     const interval = setInterval(() => {
       if (!validateAuth()) {
-        console.warn('Session expired or invalid token detected');
         logout();
       }
     }, 30000); // 30 seconds
@@ -34,12 +33,11 @@ const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
     return <Navigate to="/login" replace />;
   }
 
-  // SECURITY FIX: Get role from JWT token, not from stored user object
+  // Get role from JWT token, not from stored user object
   // This prevents users from tampering with sessionStorage to escalate privileges
   const roleFromToken = getUserRole();
 
   if (!roleFromToken) {
-    console.error('Unable to extract role from token');
     logout();
     return <Navigate to="/login" replace />;
   }
