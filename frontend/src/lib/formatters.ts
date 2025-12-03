@@ -68,7 +68,7 @@ export const getSpotStatusBadgeVariant = (
 export const getSpotTypeColor = (type: string): string => {
   switch (type) {
     case 'REGULAR':
-      return 'bg-blue-500';
+      return 'bg-teal-500';
     case 'VIP':
       return 'bg-purple-500';
     case 'HANDICAP':

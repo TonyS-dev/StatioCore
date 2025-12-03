@@ -24,7 +24,7 @@ const AdminDashboard = () => {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Loading admin dashboard...</p>
         </div>
       </div>
@@ -45,8 +45,8 @@ const AdminDashboard = () => {
       title: 'Total Spots',
       value: dashboard?.totalSpots || 0,
       icon: ParkingCircle,
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-50',
+      color: 'text-teal-600',
+      bgColor: 'bg-teal-50',
     },
     {
       title: 'Occupied',
@@ -259,8 +259,8 @@ const AdminDashboard = () => {
                   key={index}
                   className="flex items-start space-x-4 pb-4 border-b last:border-b-0"
                 >
-                  <div className="bg-blue-50 p-2 rounded-lg">
-                    <Activity className="h-4 w-4 text-blue-600" />
+                  <div className="bg-teal-50 p-2 rounded-lg">
+                    <Activity className="h-4 w-4 text-teal-600" />
                   </div>
                   <div className="flex-1 space-y-1">
                     <div className="flex items-center justify-between">

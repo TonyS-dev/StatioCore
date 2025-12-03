@@ -170,7 +170,7 @@ const UserManagement = () => {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Loading users...</p>
         </div>
       </div>
@@ -242,7 +242,7 @@ const UserManagement = () => {
             <CardTitle className="text-sm font-medium text-gray-600">Regular Users</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold text-blue-600">
+            <p className="text-2xl font-bold text-teal-600">
               {users.filter((u) => u.role === Role.USER).length}
             </p>
           </CardContent>
@@ -333,7 +333,7 @@ const UserManagement = () => {
                             {user.role === Role.ADMIN ? (
                               <Shield className="h-4 w-4 text-orange-600" />
                             ) : (
-                              <UserIcon className="h-4 w-4 text-blue-600" />
+                              <UserIcon className="h-4 w-4 text-teal-600" />
                             )}
                           </div>
                           <div>
@@ -348,7 +348,7 @@ const UserManagement = () => {
                           className={
                             user.role === Role.ADMIN
                               ? 'bg-orange-100 text-orange-800'
-                              : 'bg-blue-100 text-blue-800'
+                              : 'bg-teal-100 text-teal-800'
                           }
                           variant="outline"
                         >
@@ -498,7 +498,7 @@ const UserManagement = () => {
               </Select>
             </div>
 
-            <div className="bg-blue-50 border border-blue-200 rounded-md p-3 flex items-start space-x-2">
+            <div className="bg-teal-50 border border-blue-200 rounded-md p-3 flex items-start space-x-2">
               <Shield className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
               <p className="text-xs text-blue-800">
                 {newUser.role === Role.ADMIN

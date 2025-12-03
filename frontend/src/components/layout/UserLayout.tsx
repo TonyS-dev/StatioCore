@@ -19,7 +19,7 @@ const UserLayout = () => {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <Car className="h-8 w-8 text-blue-600" />
+              <Car className="h-8 w-8 text-teal-600" />
               <h1 className="text-2xl font-bold text-gray-900">ParkNexus</h1>
             </div>
             <div className="flex items-center space-x-4">
@@ -41,28 +41,28 @@ const UserLayout = () => {
           <div className="flex space-x-1">
             <Link
               to="/user/dashboard"
-              className="flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 border-b-2 border-transparent hover:border-blue-600 transition-colors"
+              className="flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:text-teal-600 hover:bg-gray-50 border-b-2 border-transparent hover:border-teal-600 transition-colors"
             >
               <LayoutDashboard className="h-4 w-4 mr-2" />
               Dashboard
             </Link>
             <Link
               to="/user/spots"
-              className="flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 border-b-2 border-transparent hover:border-blue-600 transition-colors"
+              className="flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:text-teal-600 hover:bg-gray-50 border-b-2 border-transparent hover:border-teal-600 transition-colors"
             >
               <ParkingCircle className="h-4 w-4 mr-2" />
               Available Spots
             </Link>
             <Link
               to="/user/reservations"
-              className="flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 border-b-2 border-transparent hover:border-blue-600 transition-colors"
+              className="flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:text-teal-600 hover:bg-gray-50 border-b-2 border-transparent hover:border-teal-600 transition-colors"
             >
               <Calendar className="h-4 w-4 mr-2" />
               Reservations
             </Link>
             <Link
               to="/user/parking-management"
-              className="flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 border-b-2 border-transparent hover:border-blue-600 transition-colors"
+              className="flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:text-teal-600 hover:bg-gray-50 border-b-2 border-transparent hover:border-teal-600 transition-colors"
             >
               <LogIn className="h-4 w-4 mr-2" />
               Parking Management

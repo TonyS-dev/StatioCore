@@ -61,7 +61,7 @@ const ActivityLogs = () => {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Loading activity logs...</p>
         </div>
       </div>
@@ -205,7 +205,7 @@ const ActivityLogs = () => {
           <Badge
             key={action}
             className={`cursor-pointer ${
-              actionFilter === action ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-800'
+              actionFilter === action ? 'bg-teal-600 text-white' : 'bg-gray-100 text-gray-800'
             }`}
             onClick={() => {
               setActionFilter(actionFilter === action ? '' : action);
@@ -338,7 +338,7 @@ const ActivityLogs = () => {
 
       {/* Real-time indicator */}
       <div className="flex items-center justify-center text-sm text-gray-500">
-        <ActivityIcon className="h-4 w-4 mr-2 animate-pulse text-blue-600" />
+        <ActivityIcon className="h-4 w-4 mr-2 animate-pulse text-teal-600" />
         <span>Auto-refreshing every 15 seconds • Refreshes immediately when tab is opened</span>
       </div>
     </div>

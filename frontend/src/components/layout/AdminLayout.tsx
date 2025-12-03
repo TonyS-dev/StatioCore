@@ -15,19 +15,19 @@ const AdminLayout = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
+      <header className="bg-gradient-to-r from-teal-600 to-teal-800 text-white">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <Shield className="h-8 w-8" />
               <div>
                 <h1 className="text-2xl font-bold">ParkNexus Admin</h1>
-                <p className="text-xs text-blue-200">Management Portal</p>
+                <p className="text-xs text-teal-200">Management Portal</p>
               </div>
             </div>
             <div className="flex items-center space-x-4">
               <span className="text-sm">
-                <span className="text-blue-200">Admin:</span>{' '}
+                <span className="text-teal-200">Admin:</span>{' '}
                 <span className="font-semibold">{user?.fullName}</span>
               </span>
               <Button variant="secondary" size="sm" onClick={handleLogout}>
@@ -45,28 +45,28 @@ const AdminLayout = () => {
           <div className="flex space-x-1">
             <Link
               to="/admin/dashboard"
-              className="flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 border-b-2 border-transparent hover:border-blue-600 transition-colors"
+              className="flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:text-teal-600 hover:bg-gray-50 border-b-2 border-transparent hover:border-teal-600 transition-colors"
             >
               <LayoutDashboard className="h-4 w-4 mr-2" />
               Dashboard
             </Link>
             <Link
               to="/admin/buildings"
-              className="flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 border-b-2 border-transparent hover:border-blue-600 transition-colors"
+              className="flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:text-teal-600 hover:bg-gray-50 border-b-2 border-transparent hover:border-teal-600 transition-colors"
             >
               <Building className="h-4 w-4 mr-2" />
               Parking Lot Management
             </Link>
             <Link
               to="/admin/users"
-              className="flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 border-b-2 border-transparent hover:border-blue-600 transition-colors"
+              className="flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:text-teal-600 hover:bg-gray-50 border-b-2 border-transparent hover:border-teal-600 transition-colors"
             >
               <Users className="h-4 w-4 mr-2" />
               Users
             </Link>
             <Link
               to="/admin/logs"
-              className="flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 border-b-2 border-transparent hover:border-blue-600 transition-colors"
+              className="flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:text-teal-600 hover:bg-gray-50 border-b-2 border-transparent hover:border-teal-600 transition-colors"
             >
               <FileText className="h-4 w-4 mr-2" />
               Activity Logs

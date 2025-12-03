@@ -322,18 +322,18 @@ const ParkingLotManagement = () => {
 
   const getTypeBadge = (type: string) => {
     const colors = {
-      STANDARD: 'bg-blue-100 text-blue-800',
+      STANDARD: 'bg-teal-100 text-teal-800',
       VIP: 'bg-purple-100 text-purple-800',
       HANDICAP: 'bg-orange-100 text-orange-800',
     };
-    return colors[type as keyof typeof colors] || 'bg-blue-100 text-blue-800';
+    return colors[type as keyof typeof colors] || 'bg-teal-100 text-teal-800';
   };
 
   if (loadingBuildings || loadingFloors || loadingSpots) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Loading parking lot data...</p>
         </div>
       </div>

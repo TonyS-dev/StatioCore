@@ -8,7 +8,7 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-blue-600 text-white hover:bg-blue-700',
+        default: 'bg-teal-600 text-white hover:bg-teal-700',
         destructive: 'bg-red-600 text-white hover:bg-red-700',
         outline: 'border border-gray-300 bg-white hover:bg-gray-50',
         secondary: 'bg-gray-200 text-gray-900 hover:bg-gray-300',
@@ -100,7 +100,7 @@ export const Input = React.forwardRef<
   <input
     type={type}
     className={cn(
-      'flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:opacity-50',
+      'flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 disabled:opacity-50',
       className
     )}
     ref={ref}
@@ -115,7 +115,7 @@ const badgeVariants = cva(
   {
     variants: {
       variant: {
-        default: 'border-transparent bg-blue-100 text-blue-800',
+        default: 'border-transparent bg-teal-100 text-teal-800',
         secondary: 'border-transparent bg-gray-100 text-gray-800',
         destructive: 'border-transparent bg-red-100 text-red-800',
         success: 'border-transparent bg-green-100 text-green-800',
@@ -231,7 +231,7 @@ export const Select = React.forwardRef<
   <select
     ref={ref}
     className={cn(
-      'flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:opacity-50',
+      'flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 disabled:opacity-50',
       className
     )}
     {...props}

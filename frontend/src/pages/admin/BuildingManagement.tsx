@@ -29,7 +29,7 @@ const BuildingManagement = () => {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Loading buildings...</p>
         </div>
       </div>
@@ -110,8 +110,8 @@ const BuildingManagement = () => {
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div className="flex items-start space-x-3">
-                    <div className="bg-blue-50 p-3 rounded-lg">
-                      <Building className="h-6 w-6 text-blue-600" />
+                    <div className="bg-teal-50 p-3 rounded-lg">
+                      <Building className="h-6 w-6 text-teal-600" />
                     </div>
                     <div>
                       <CardTitle className="text-lg">{building.name}</CardTitle>

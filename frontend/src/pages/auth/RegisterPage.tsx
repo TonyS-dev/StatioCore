@@ -76,11 +76,11 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-50 to-teal-100 px-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1 text-center">
           <div className="flex justify-center mb-4">
-            <div className="bg-blue-600 p-3 rounded-full">
+            <div className="bg-teal-600 p-3 rounded-full">
               <Car className="h-8 w-8 text-white" />
             </div>
           </div>
@@ -172,7 +172,7 @@ const RegisterPage = () => {
             </Button>
             <p className="text-sm text-center text-gray-600">
               Already have an account?{' '}
-              <Link to="/login" className="text-blue-600 hover:text-blue-800 font-semibold">
+              <Link to="/login" className="text-teal-600 hover:text-teal-800 font-semibold">
                 Login here
               </Link>
             </p>

@@ -106,7 +106,7 @@ const AvailableSpots = () => {
       case SpotType.EV_CHARGING:
         return 'bg-green-100 text-green-800 border-green-300';
       default:
-        return 'bg-blue-100 text-blue-800 border-blue-300';
+        return 'bg-teal-100 text-teal-800 border-teal-300';
     }
   };
 
@@ -127,7 +127,7 @@ const AvailableSpots = () => {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Loading available spots...</p>
         </div>
       </div>
@@ -153,14 +153,14 @@ const AvailableSpots = () => {
 
       {/* Active Session Alert */}
       {activeSession && (
-        <Card className="border-blue-500 bg-blue-50">
+        <Card className="border-teal-500 bg-teal-50">
           <CardContent className="py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <AlertCircle className="h-5 w-5 text-blue-600" />
+                <AlertCircle className="h-5 w-5 text-teal-600" />
                 <div>
-                  <p className="font-semibold text-blue-900">You have an active parking session</p>
-                  <p className="text-sm text-blue-700">
+                  <p className="font-semibold text-teal-900">You have an active parking session</p>
+                  <p className="text-sm text-teal-700">
                     Spot {activeSession.spotNumber} at {activeSession.buildingName}
                   </p>
                 </div>

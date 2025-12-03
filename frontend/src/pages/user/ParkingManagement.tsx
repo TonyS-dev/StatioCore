@@ -101,7 +101,7 @@ const CheckInSection = ({ preSelectedSpot, hasReservation }: CheckInSectionProps
       case SpotType.EV_CHARGING:
         return 'bg-green-100 text-green-800 border-green-300';
       default:
-        return 'bg-blue-100 text-blue-800 border-blue-300';
+        return 'bg-teal-100 text-teal-800 border-teal-300';
     }
   };
 
@@ -131,11 +131,11 @@ const CheckInSection = ({ preSelectedSpot, hasReservation }: CheckInSectionProps
           {selectedSpot && (
             <div className="space-y-4">
               {hasReservation && (
-                <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
-                  <p className="text-sm text-blue-800">
+                <div className="bg-teal-50 border border-teal-200 rounded-md p-3">
+                  <p className="text-sm text-teal-800">
                     <strong>✓ You have a reservation for this spot</strong>
                   </p>
-                  <p className="text-xs text-blue-600 mt-1">
+                  <p className="text-xs text-teal-600 mt-1">
                     Proceeding with check-in will activate your reservation
                   </p>
                 </div>
@@ -324,7 +324,7 @@ const ParkingManagement = () => {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Loading parking sessions...</p>
         </div>
       </div>
@@ -349,9 +349,9 @@ const ParkingManagement = () => {
 
       {/* Active Session */}
       {activeSession ? (
-        <Card className="border-blue-500 border-2">
+        <Card className="border-teal-500 border-2">
           <CardHeader>
-            <CardTitle className="flex items-center text-blue-600">
+            <CardTitle className="flex items-center text-teal-600">
               <Clock className="h-5 w-5 mr-2 animate-pulse" />
               Active Parking Session
             </CardTitle>
@@ -384,7 +384,7 @@ const ParkingManagement = () => {
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-600">Duration:</span>
-                  <span className="font-semibold text-blue-600">
+                  <span className="font-semibold text-teal-600">
                     {formatDuration(activeSession.duration)}
                   </span>
                 </div>
@@ -519,8 +519,8 @@ const ParkingManagement = () => {
 
               {/* Fee Calculation */}
               {calculateFeeMutation.isPending ? (
-                <div className="bg-blue-50 p-4 rounded-lg text-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+                <div className="bg-teal-50 p-4 rounded-lg text-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600 mx-auto mb-2"></div>
                   <p className="text-sm text-blue-800">Calculating fee...</p>
                 </div>
               ) : feeCalculation && feeCalculation.amountDue !== undefined ? (

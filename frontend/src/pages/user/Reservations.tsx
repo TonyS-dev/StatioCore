@@ -196,7 +196,7 @@ const Reservations = () => {
       case SpotType.EV_CHARGING:
         return 'bg-green-100 text-green-800 border-green-300';
       default:
-        return 'bg-blue-100 text-blue-800 border-blue-300';
+        return 'bg-teal-100 text-teal-800 border-teal-300';
     }
   };
 
@@ -260,9 +260,9 @@ const Reservations = () => {
 
       {/* My Active Reservations */}
       {activeReservations && activeReservations.length > 0 && (
-        <Card className="border-blue-500 border-2">
+        <Card className="border-teal-500 border-2">
           <CardHeader>
-            <CardTitle className="flex items-center text-blue-600">
+            <CardTitle className="flex items-center text-teal-600">
               <Calendar className="h-5 w-5 mr-2" />
               My Active Reservations
             </CardTitle>
@@ -446,7 +446,7 @@ const Reservations = () => {
               {isLoading ? (
                 <div className="flex items-center justify-center min-h-[400px]">
                   <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto mb-4"></div>
                     <p className="text-gray-600">Loading available spots...</p>
                   </div>
                 </div>

@@ -64,11 +64,11 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-50 to-teal-100 px-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1 text-center">
           <div className="flex justify-center mb-4">
-            <div className="bg-blue-600 p-3 rounded-full">
+            <div className="bg-teal-600 p-3 rounded-full">
               <Car className="h-8 w-8 text-white" />
             </div>
           </div>
@@ -112,9 +112,9 @@ const LoginPage = () => {
               />
             </div>
 
-            <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
-              <p className="text-xs text-blue-800 font-semibold mb-2">Demo Accounts:</p>
-              <div className="space-y-1 text-xs text-blue-700">
+            <div className="bg-teal-50 border border-teal-200 rounded-md p-3">
+              <p className="text-xs text-teal-800 font-semibold mb-2">Demo Accounts:</p>
+              <div className="space-y-1 text-xs text-teal-700">
                 <p><strong>Admin:</strong> admin@parknexus.com / password123</p>
                 <p><strong>User:</strong> john.doe@example.com / password123</p>
               </div>
@@ -130,7 +130,7 @@ const LoginPage = () => {
             </Button>
             <p className="text-sm text-center text-gray-600">
               Don't have an account?{' '}
-              <Link to="/register" className="text-blue-600 hover:text-blue-800 font-semibold">
+              <Link to="/register" className="text-teal-600 hover:text-teal-800 font-semibold">
                 Register here
               </Link>
             </p>
