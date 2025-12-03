@@ -1,9 +1,15 @@
+networks:
+  parknexus-network:
+    driver: bridge
+
 services:
   # PostgreSQL Database service
   postgres:
     image: postgres:15-alpine
     container_name: parknexus-postgres-db
     restart: unless-stopped
+    networks:
+      - parknexus-network
     env_file:
       - .env
     environment:
@@ -11,7 +17,7 @@ services:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
-      - "5433:5432" # Maps the DB port to the host so it can be connected from outside
+      - "${DB_PORT}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -20,52 +26,69 @@ services:
       timeout: 5s
       retries: 5
 
-  # Spring Boot application service
-  app:
+  # Spring Boot Backend
+  backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: parknexus-backend-app
+    container_name: parknexus-backend
+    networks:
+      - parknexus-network
     depends_on:
       postgres:
-        condition: service_healthy # Waits for the DB to be ready
+        condition: service_healthy
     ports:
       - "8080:8080"
     env_file:
       - .env
     environment:
-      # Spring profile to use the 'docker' configuration in application.yml
       SPRING_PROFILES_ACTIVE: docker
-
-      # Database configuration
       DB_NAME: ${DB_NAME}
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
-
-      # Actuator + Prometheus
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION: ${JWT_EXPIRATION}
       MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: "*"
       MANAGEMENT_ENDPOINT_PROMETHEUS_ENABLED: "true"
       MANAGEMENT_METRICS_EXPORT_PROMETHEUS_ENABLED: "true"
-
     restart: unless-stopped
 
+  # React Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: parknexus-frontend
+    networks:
+      - parknexus-network
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  # Prometheus
   prometheus:
     image: prom/prometheus
-    container_name: prometheus
+    container_name: parknexus-prometheus
     restart: unless-stopped
+    networks:
+      - parknexus-network
     volumes:
       - ./backend/prometheus:/etc/prometheus
     ports:
       - "9090:9090"
 
+  # Grafana
   grafana:
     image: grafana/grafana
-    container_name: grafana
+    container_name: parknexus-grafana
     restart: unless-stopped
+    networks:
+      - parknexus-network
     ports:
       - "3000:3000"
     depends_on:
       - prometheus
-
 volumes:
   postgres_data:

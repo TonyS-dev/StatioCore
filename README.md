@@ -117,9 +117,38 @@ Note: For local development with the backend run via Gradle, application.yml use
 
 ---
 
-## ⚙️ Installation & Run (Local Development)
+## 🚀 Quick Start (Recommended)
 
-This section shows two common flows: full-stack using Docker, and running frontend + backend locally without Docker.
+**The easiest way to run ParkNexus is using the provided setup and run scripts:**
+
+### Linux/macOS
+```bash
+chmod +x scripts/setup.sh scripts/run.sh
+./scripts/setup.sh  # First time only - sets up Docker and .env
+./scripts/run.sh    # Starts all services
+```
+
+### Windows (PowerShell)
+```powershell
+Set-ExecutionPolicy RemoteSigned -Scope CurrentUser  # First time only
+.\scripts\setup.ps1  # Sets up Docker and .env
+.\scripts\run.ps1    # Starts all services
+```
+
+The scripts will:
+- ✅ Detect your OS and Docker installation
+- ✅ Help install Docker if needed
+- ✅ Create `.env` from `.env.example`
+- ✅ Build and start all containers (Frontend, Backend, DB, Prometheus, Grafana)
+- ✅ Show you the URLs to access each service
+
+**See `scripts/README.md` for detailed documentation.**
+
+---
+
+## ⚙️ Manual Installation & Run
+
+If you prefer manual setup, follow these steps:
 
 A) Full-stack (recommended, Docker):
 

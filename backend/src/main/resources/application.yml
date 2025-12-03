@@ -49,6 +49,7 @@ spring:
       on-profile: "docker"
   datasource:
     # Inside docker, the services are communicated by their service name
+    # Always use 5432 as it's the internal container port
     url: jdbc:postgresql://postgres:5432/${DB_NAME}
     username: ${DB_USER}
     password: ${DB_PASSWORD}

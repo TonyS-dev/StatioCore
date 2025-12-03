@@ -24,11 +24,12 @@ public class CorsConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // Frontend development servers
+        // Frontend development servers and Docker container
         configuration.setAllowedOrigins(List.of(
-                "http://localhost:3000",   // React
-                "http://localhost:5173",   // Vite
-                "http://localhost:4200"    // Angular
+                "http://localhost",        // Docker frontend (port 80)
+                "http://localhost:3000",   // React dev server
+                "http://localhost:5173",   // Vite dev server
+                "http://localhost:4200"    // Angular dev server
         ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
