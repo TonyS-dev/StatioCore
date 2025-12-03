@@ -168,6 +168,20 @@ public class GlobalExceptionHandler {
         return pd;
     }
 
+    // Error 500: Null pointer exception handler (data integrity issues)
+    @ExceptionHandler(NullPointerException.class)
+    public ProblemDetail handleNullPointer(NullPointerException ex, HttpServletRequest req) {
+        ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+        pd.setType(URI.create("/errors/data-integrity"));
+        pd.setTitle("Data Integrity Error");
+        pd.setDetail("An unexpected data error occurred. The system may have incomplete information.");
+        pd.setProperty("timestamp", Instant.now());
+        pd.setProperty("instance", req.getRequestURI());
+        // Log the full stack trace for debugging
+        log.error("NullPointerException at {}: {}", req.getRequestURI(), ex.getMessage(), ex);
+        return pd;
+    }
+
     // Error 500: Generic server error handler
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleGeneric(Exception ex, HttpServletRequest req) {

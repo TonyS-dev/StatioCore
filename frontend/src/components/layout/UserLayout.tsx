@@ -2,6 +2,7 @@ import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '@/store/authStore';
 import { Button } from '@/components/ui/button';
 import { Car, LayoutDashboard, ParkingCircle, Calendar, LogIn, LogOut } from 'lucide-react';
+import { useEffect } from 'react';
 
 const UserLayout = () => {
   const { user, logout } = useAuthStore();
@@ -16,6 +17,28 @@ const UserLayout = () => {
   // Helper function to check if a path is active
   const isActivePath = (path: string) => {
     return location.pathname === path || location.pathname.startsWith(path + '/');
+  };
+
+  // Persist last active user tab in sessionStorage
+  useEffect(() => {
+    // If user lands on base /user path, redirect to last stored tab (if any)
+    if (location.pathname === '/user' || location.pathname === '/user/') {
+      const last = sessionStorage.getItem('lastUserTab');
+      if (last) {
+        navigate(last, { replace: true });
+      } else {
+        // default to dashboard
+        navigate('/user/dashboard', { replace: true });
+      }
+    }
+  }, [location.pathname, navigate]);
+
+  const handleTabClick = (path: string) => {
+    try {
+      sessionStorage.setItem('lastUserTab', path);
+    } catch (e) {
+      // ignore storage errors
+    }
   };
 
   return (
@@ -42,11 +65,12 @@ const UserLayout = () => {
       </header>
 
       {/* Navigation */}
-      <nav className="bg-white border-b">
+      <nav className="sticky top-0 z-40 bg-white border-b">
         <div className="container mx-auto px-4">
           <div className="flex space-x-1">
             <Link
               to="/user/dashboard"
+              onClick={() => handleTabClick('/user/dashboard')}
               className={`flex items-center px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
                 isActivePath('/user/dashboard')
                   ? 'text-teal-600 bg-teal-50 border-teal-600'
@@ -58,6 +82,7 @@ const UserLayout = () => {
             </Link>
             <Link
               to="/user/spots"
+              onClick={() => handleTabClick('/user/spots')}
               className={`flex items-center px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
                 isActivePath('/user/spots')
                   ? 'text-teal-600 bg-teal-50 border-teal-600'
@@ -69,6 +94,7 @@ const UserLayout = () => {
             </Link>
             <Link
               to="/user/reservations"
+              onClick={() => handleTabClick('/user/reservations')}
               className={`flex items-center px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
                 isActivePath('/user/reservations')
                   ? 'text-teal-600 bg-teal-50 border-teal-600'
@@ -80,6 +106,7 @@ const UserLayout = () => {
             </Link>
             <Link
               to="/user/parking-management"
+              onClick={() => handleTabClick('/user/parking-management')}
               className={`flex items-center px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
                 isActivePath('/user/parking-management') || isActivePath('/user/parking')
                   ? 'text-teal-600 bg-teal-50 border-teal-600'

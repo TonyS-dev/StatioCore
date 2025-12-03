@@ -9,7 +9,7 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
-  const { isAuthenticated, user, validateAuth, logout } = useAuthStore();
+  const { isAuthenticated, user, validateAuth, logout, getUserRole } = useAuthStore();
 
   // Validate JWT on mount and periodically
   useEffect(() => {
@@ -34,10 +34,20 @@ const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
     return <Navigate to="/login" replace />;
   }
 
-  // Check role authorization
-  if (!allowedRoles.includes(user.role)) {
-    // Redirect to appropriate dashboard based on role
-    const redirectPath = user.role === Role.ADMIN ? '/admin/dashboard' : '/user/dashboard';
+  // SECURITY FIX: Get role from JWT token, not from stored user object
+  // This prevents users from tampering with sessionStorage to escalate privileges
+  const roleFromToken = getUserRole();
+
+  if (!roleFromToken) {
+    console.error('Unable to extract role from token');
+    logout();
+    return <Navigate to="/login" replace />;
+  }
+
+  // Check role authorization using JWT role, not user.role
+  if (!allowedRoles.includes(roleFromToken)) {
+    // Redirect to appropriate dashboard based on actual role from token
+    const redirectPath = roleFromToken === Role.ADMIN ? '/admin/dashboard' : '/user/dashboard';
     return <Navigate to={redirectPath} replace />;
   }
 

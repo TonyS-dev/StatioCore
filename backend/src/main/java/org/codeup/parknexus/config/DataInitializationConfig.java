@@ -142,6 +142,7 @@ public class DataInitializationConfig {
                         .checkOutTime(null)
                         .amountDue(null)
                         .status(SessionStatus.ACTIVE)
+                        .vehicleNumber("ABC-1234")
                         .build();
 
                 ParkingSession session2 = ParkingSession.builder()
@@ -161,6 +162,7 @@ public class DataInitializationConfig {
                         .checkOutTime(OffsetDateTime.now().minusDays(1).plusHours(4))
                         .amountDue(new BigDecimal("40.00"))
                         .status(SessionStatus.COMPLETED)
+                        .vehicleNumber("ABC-1234")
                         .build();
 
                 ParkingSession session4 = ParkingSession.builder()
@@ -188,6 +190,7 @@ public class DataInitializationConfig {
                         .checkOutTime(OffsetDateTime.now().minusDays(4).plusHours(6))
                         .amountDue(new BigDecimal("60.00"))
                         .status(SessionStatus.COMPLETED)
+                        .vehicleNumber("ABC-1234")
                         .build();
 
                 ParkingSession session7 = ParkingSession.builder()
@@ -215,6 +218,7 @@ public class DataInitializationConfig {
                         .checkOutTime(OffsetDateTime.now().minusDays(7).plusHours(5))
                         .amountDue(new BigDecimal("50.00"))
                         .status(SessionStatus.COMPLETED)
+                        .vehicleNumber("ABC-1234")
                         .build();
 
                 ParkingSession session10 = ParkingSession.builder()
@@ -388,4 +392,3 @@ public class DataInitializationConfig {
         };
     }
 }
-

@@ -6,6 +6,10 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
+# Build argument for API URL
+ARG VITE_API_BASE_URL
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
+
 # Install dependencies
 RUN npm ci
 
@@ -29,4 +33,3 @@ EXPOSE 80
 
 # Start nginx
 CMD ["nginx", "-g", "daemon off;"]
-

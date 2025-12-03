@@ -2,6 +2,7 @@ import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '@/store/authStore';
 import { Button } from '@/components/ui/button';
 import { Shield, LayoutDashboard, Building, Users, FileText, LogOut } from 'lucide-react';
+import { useEffect } from 'react';
 
 const AdminLayout = () => {
   const { user, logout } = useAuthStore();
@@ -16,6 +17,27 @@ const AdminLayout = () => {
   // Helper function to check if a path is active
   const isActivePath = (path: string) => {
     return location.pathname === path || location.pathname.startsWith(path + '/');
+  };
+
+  // Persist last active admin tab in sessionStorage
+  useEffect(() => {
+    if (location.pathname === '/admin' || location.pathname === '/admin/') {
+      const last = sessionStorage.getItem('lastAdminTab');
+      if (last) {
+        navigate(last, { replace: true });
+      } else {
+        // default to admin dashboard
+        navigate('/admin/dashboard', { replace: true });
+      }
+    }
+  }, [location.pathname, navigate]);
+
+  const handleTabClick = (path: string) => {
+    try {
+      sessionStorage.setItem('lastAdminTab', path);
+    } catch (e) {
+      // ignore storage errors
+    }
   };
 
   return (
@@ -46,11 +68,12 @@ const AdminLayout = () => {
       </header>
 
       {/* Navigation */}
-      <nav className="bg-white border-b shadow-sm">
+      <nav className="sticky top-0 z-40 bg-white border-b shadow-sm">
         <div className="container mx-auto px-4">
           <div className="flex space-x-1">
             <Link
               to="/admin/dashboard"
+              onClick={() => handleTabClick('/admin/dashboard')}
               className={`flex items-center px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
                 isActivePath('/admin/dashboard')
                   ? 'text-teal-600 bg-teal-50 border-teal-600'
@@ -62,6 +85,7 @@ const AdminLayout = () => {
             </Link>
             <Link
               to="/admin/buildings"
+              onClick={() => handleTabClick('/admin/buildings')}
               className={`flex items-center px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
                 isActivePath('/admin/buildings')
                   ? 'text-teal-600 bg-teal-50 border-teal-600'
@@ -73,6 +97,7 @@ const AdminLayout = () => {
             </Link>
             <Link
               to="/admin/users"
+              onClick={() => handleTabClick('/admin/users')}
               className={`flex items-center px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
                 isActivePath('/admin/users')
                   ? 'text-teal-600 bg-teal-50 border-teal-600'
@@ -84,6 +109,7 @@ const AdminLayout = () => {
             </Link>
             <Link
               to="/admin/logs"
+              onClick={() => handleTabClick('/admin/logs')}
               className={`flex items-center px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
                 isActivePath('/admin/logs')
                   ? 'text-teal-600 bg-teal-50 border-teal-600'

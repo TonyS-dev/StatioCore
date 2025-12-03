@@ -90,8 +90,50 @@ Troubleshooting
 - If Flyway fails on startup, check the DB connectivity and that the DB user has the proper privileges to create/alter tables.
 - If you see authentication errors, ensure `JWT_SECRET` is set and the frontend is sending `Authorization: Bearer <token>`.
 
+API Documentation (Swagger/OpenAPI)
+-----------------------------------
+The backend includes comprehensive Swagger/OpenAPI 3.0 documentation for all REST endpoints.
+
+**Access Interactive API Docs:**
+
+When the backend is running, visit:
+
+🔗 **http://localhost:8080/swagger-ui/index.html**
+
+Features:
+- Complete API reference with request/response schemas
+- Interactive "Try it out" functionality
+- Authentication support (JWT Bearer token)
+- Parameter descriptions and examples
+- Organized by API groups (Auth, User, Admin)
+
+**OpenAPI Specification:**
+
+Raw OpenAPI JSON/YAML available at:
+- JSON: `http://localhost:8080/v3/api-docs`
+- YAML: `http://localhost:8080/v3/api-docs.yaml`
+
+Use these URLs to:
+- Import into Postman/Insomnia
+- Generate client SDKs
+- Share API contracts with frontend developers
+
+**Testing Protected Endpoints:**
+
+1. Use `/api/auth/login` to get a JWT token
+2. Click "Authorize" button in Swagger UI
+3. Enter: `Bearer {your-token}`
+4. All protected endpoints will now include your auth token
+
+API Structure
+-------------
+- `/api/auth/*` - Public authentication endpoints (login, register)
+- `/api/user/*` - User endpoints (requires USER role)
+- `/api/admin/*` - Admin endpoints (requires ADMIN role)
+
 More
 ----
 - See the root `README.md` for general full-stack development instructions.
-- Expand or generate OpenAPI docs via SpringDoc at runtime (if enabled): `/v3/api-docs` and `/swagger-ui.html`.
+- All controllers use comprehensive Swagger annotations (@Operation, @ApiResponse, etc.)
+- API documentation is automatically generated from code annotations
 

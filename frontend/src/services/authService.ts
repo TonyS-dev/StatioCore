@@ -39,12 +39,13 @@ export const authService = {
   },
 
   logout(): void {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    // Use sessionStorage for tokens as requested
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('user');
   },
 
   getToken(): string | null {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
 
     // Validate token on retrieval
     if (token && !isTokenValid(token)) {
@@ -57,18 +58,18 @@ export const authService = {
 
   setToken(token: string): void {
     if (isTokenValid(token)) {
-      localStorage.setItem('token', token);
+      sessionStorage.setItem('token', token);
     } else {
       throw new Error('Attempted to store invalid token');
     }
   },
 
   getStoredUser(): string | null {
-    return localStorage.getItem('user');
+    return sessionStorage.getItem('user');
   },
 
   setStoredUser(user: string): void {
-    localStorage.setItem('user', user);
+    sessionStorage.setItem('user', user);
   },
 
   isAuthenticated(): boolean {

@@ -18,14 +18,14 @@ export const api = axios.create({
 // Request interceptor - Add JWT token to all requests and validate it
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
 
     // Validate token before making request
     if (token) {
       if (!isTokenValid(token)) {
         // Token is invalid or expired, clear storage and redirect
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('user');
 
         // Only redirect if not already on login page
         if (!window.location.pathname.includes('/login')) {
@@ -54,13 +54,13 @@ api.interceptors.response.use(
   (error: AxiosError<ApiError>) => {
     // Handle 401 Unauthorized - Token expired or invalid
     if (error.response?.status === 401) {
-      const storedToken = localStorage.getItem('token');
+      const storedToken = sessionStorage.getItem('token');
 
       // If we have a stored token, treat 401 as session expiration
       if (storedToken) {
         console.warn('Session expired - 401 response from server');
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('user');
 
         // Only redirect if not already on login page
         if (!window.location.pathname.includes('/login')) {

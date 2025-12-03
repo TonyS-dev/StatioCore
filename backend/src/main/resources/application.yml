@@ -91,3 +91,23 @@ server:
   error:
     include-message: never  # Never expose error messages
     include-stacktrace: never
+
+---
+# --- SpringDoc/Swagger Configuration ---
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    operations-sorter: method
+    tags-sorter: alpha
+    try-it-out-enabled: true
+  info:
+    title: ParkNexus API
+    description: Multi-building Parking Lot Management System
+    version: 1.0.0-MVP
+    contact:
+      name: API Support
+  show-actuator: false

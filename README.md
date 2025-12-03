@@ -238,8 +238,67 @@ Dev helper scripts (see `scripts/dev/`):
 
 - The backend exposes `/api/auth/login` and `/api/auth/register` endpoints.
 - On successful login/register the backend returns an `AuthResponse` with a JWT token and user object.
-- The frontend stores the JWT in `localStorage` and user data in a Zustand store (`frontend/src/store/authStore.ts`).
+- The frontend stores the JWT in `sessionStorage` and user data in a Zustand store (`frontend/src/store/authStore.ts`).
+- **Security**: Role information is always extracted from the JWT token (not from sessionStorage) to prevent privilege escalation attacks.
 - Protected routes are implemented via `ProtectedRoute` and the React Router layout redirects users by role to `/user/*` or `/admin/*`.
+
+---
+
+## 📚 API Documentation (Swagger/OpenAPI)
+
+ParkNexus includes comprehensive API documentation using **Swagger/OpenAPI 3.0**. All endpoints are documented with:
+- Request/response schemas
+- Authentication requirements
+- Parameter descriptions
+- Example values
+- Error responses
+
+### Access Swagger UI
+
+When the backend is running, access the interactive API documentation at:
+
+**🔗 [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)**
+
+### API Groups
+
+The documentation is organized into three main sections:
+
+1. **Authentication API** (`/api/auth`)
+   - User registration
+   - User login
+   - JWT token generation
+
+2. **User API** (`/api/user`)
+   - Dashboard and statistics
+   - Available parking spots
+   - Reservations management
+   - Parking session check-in/out
+   - Payment history
+
+3. **Admin API** (`/api/admin`)
+   - System dashboard
+   - Building, Floor, and Spot management (CRUD)
+   - User account management
+   - Activity logs and audit trail
+
+### Authentication in Swagger UI
+
+To test protected endpoints in Swagger UI:
+
+1. Login via `/api/auth/login` endpoint
+2. Copy the JWT token from the response
+3. Click the **"Authorize"** button at the top
+4. Enter: `Bearer {your-token-here}`
+5. Click "Authorize" and close the dialog
+6. Now all protected endpoints will include your token
+
+### Alternative: OpenAPI JSON
+
+Raw OpenAPI specification available at:
+- **JSON**: `http://localhost:8080/v3/api-docs`
+- **YAML**: `http://localhost:8080/v3/api-docs.yaml`
+
+Use these URLs to import the API into tools like Postman, Insomnia, or generate client SDKs.
 
 ---
 
