@@ -27,5 +27,7 @@ public interface IParkingSpotRepository extends JpaRepository<ParkingSpot, UUID>
     // This automatically JOINs Spot -> Floor -> Building
     @Query("SELECT s FROM ParkingSpot s WHERE s.floor.building.id = :buildingId AND s.status = 'AVAILABLE'")
     List<ParkingSpot> findAvailableByBuilding(@Param("buildingId") UUID buildingId);
+
+    List<ParkingSpot> findByStatus(SpotStatus status);
 }
 

@@ -11,5 +11,6 @@ public class AdminDashboardResponse {
     private Long occupiedSpots;
     private Double totalRevenue;
     private Long totalUsers;
+    private Long adminsCount;
+    private Long usersCount;
 }
-

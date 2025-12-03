@@ -21,8 +21,7 @@ public class StandardFeeStrategy implements IFeeCalculationStrategy {
         // Calculate hours as fractional (minutes / 60)
         long minutes = duration.toMinutes();
         BigDecimal hours = BigDecimal.valueOf(minutes).divide(BigDecimal.valueOf(60), 4, RoundingMode.HALF_UP);
-        BigDecimal fee = hours.multiply(RATE_PER_HOUR).setScale(2, RoundingMode.HALF_UP);
-        return fee;
+        return hours.multiply(RATE_PER_HOUR).setScale(2, RoundingMode.HALF_UP);
     }
 }
 

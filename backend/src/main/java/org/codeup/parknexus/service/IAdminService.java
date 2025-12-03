@@ -5,10 +5,11 @@ import org.codeup.parknexus.domain.enums.Role;
 import org.codeup.parknexus.web.dto.admin.AdminDashboardResponse;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface IAdminService {
     AdminDashboardResponse getDashboard();
     List<User> getAllUsers();
-    User updateUserRole(Long userId, Role role);
+    User updateUserRole(UUID userId, Role role);
 }
 

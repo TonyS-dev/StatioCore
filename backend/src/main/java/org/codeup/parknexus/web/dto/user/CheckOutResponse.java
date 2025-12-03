@@ -6,14 +6,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data @NoArgsConstructor @AllArgsConstructor @Builder
 public class CheckOutResponse {
-    private Long sessionId;
-    private Long spotId;
+    private UUID sessionId;
+    private UUID spotId;
     private LocalDateTime checkInTime;
     private LocalDateTime checkOutTime;
     private Long durationMinutes;
     private Double fee;
 }
-

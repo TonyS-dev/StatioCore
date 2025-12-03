@@ -5,15 +5,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Data @NoArgsConstructor @AllArgsConstructor @Builder
 public class ReservationResponse {
-    private Long id;
-    private Long spotId;
+    private UUID id;
+    private UUID spotId;
     private String spotIdentifier;
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
+    private OffsetDateTime startTime;
+    private OffsetDateTime endTime;
     private String status;
 }
-

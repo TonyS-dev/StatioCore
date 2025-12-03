@@ -5,11 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+import java.util.UUID;
+
 @Data @NoArgsConstructor @AllArgsConstructor @Builder
 public class PaymentResponse {
-    private Long sessionId;
-    private Double amount;
+    private UUID sessionId;
+    private BigDecimal amount;
     private String status; // e.g., "SUCCESS"
     private String transactionId;
 }
-

@@ -6,14 +6,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+import java.util.UUID;
+
 @Data @NoArgsConstructor @AllArgsConstructor @Builder
 public class PaymentRequest {
     @NotNull
-    private Long sessionId;
+    private UUID sessionId;
 
     @NotNull
-    private Double amount;
+    private BigDecimal amount;
 
     private String paymentMethod; // e.g., card, cash
 }
-
