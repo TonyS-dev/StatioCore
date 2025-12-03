@@ -4,9 +4,13 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.codeup.parknexus.domain.ActivityLog;
 import org.codeup.parknexus.domain.Building;
+import org.codeup.parknexus.domain.User;
+import org.codeup.parknexus.domain.enums.Role;
+import org.codeup.parknexus.exception.BadRequestException;
 import org.codeup.parknexus.repository.IActivityLogRepository;
 import org.codeup.parknexus.repository.IUserRepository;
 import org.codeup.parknexus.service.IAdminService;
+import org.codeup.parknexus.web.dto.auth.RegisterRequest;
 import org.codeup.parknexus.web.dto.common.PageResponse;
 import org.codeup.parknexus.web.dto.admin.*;
 import org.codeup.parknexus.web.mapper.ActivityLogMapper;
@@ -15,10 +19,12 @@ import org.codeup.parknexus.web.mapper.UserMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.time.OffsetDateTime;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -28,6 +34,7 @@ public class AdminController {
     private final IAdminService adminService;
     private final IActivityLogRepository activityLogRepository;
     private final IUserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
     private final ActivityLogMapper activityLogMapper;
     private final BuildingMapper buildingMapper;
     private final UserMapper userMapper;
@@ -90,4 +97,28 @@ public class AdminController {
 
         return ResponseEntity.ok(response);
     }
+
+    @PostMapping("/users/admin")
+    public ResponseEntity<UserResponse> createAdmin(@Valid @RequestBody RegisterRequest request) {
+        // Check if user already exists
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new BadRequestException("User already exists with email: " + request.getEmail());
+        }
+
+        // Create new admin user with HASHED password
+        User admin = User.builder()
+                .email(request.getEmail())
+                .passwordHash(passwordEncoder.encode(request.getPassword()))
+                .fullName(request.getFullName() != null ? request.getFullName() : request.getEmail())
+                .role(Role.ADMIN)
+                .isActive(true)
+                .createdAt(OffsetDateTime.now())
+                .build();
+
+        admin = userRepository.save(admin);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(userMapper.toResponse(admin));
+    }
 }
+
