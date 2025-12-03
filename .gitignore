@@ -1,0 +1,112 @@
+# ===================================================================
+# 1. Global / OS Files (Junk files)
+# ===================================================================
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+*~
+*.log
+*.tmp
+*.bak
+*.swp
+
+# ===================================================================
+# 2. Security & Environment
+# ===================================================================
+.env
+.env.*
+.env.local
+env/
+secrets.properties
+application-secret.yml
+# Keep the template
+!.env.example
+
+# ===================================================================
+# 3. BACKEND (Java / Spring Boot / Gradle)
+# ===================================================================
+# Gradle caching and build folders
+.gradle/
+build/
+out/
+bin/
+
+!gradle/wrapper/gradle-wrapper.jar
+
+# Log files
+logs/
+*.pid
+
+# Spring Boot specific
+target/
+
+# ===================================================================
+# 4. FRONTEND (Node / React / Vite)
+# ===================================================================
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+coverage/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Testing
+.nyc_output
+
+# Local Env
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+
+# Editor directories and files
+backend/.idea
+.vscode
+*.suo
+*.ntvs
+*.njsproj
+*.sln
+*.sw?
+
+# ===================================================================
+# 5. DOCKER & DATABASES
+# ===================================================================
+postgres-data/
+
+# Docker generation
+.docker/
+
+# ===================================================================
+# 6. IDE Specifics
+# ===================================================================
+### IntelliJ IDEA ###
+backend/.idea/
+*.iws
+*.iml
+*.ipr
+*.run.xml
+
+### VS Code ###
+.vscode/
+*.code-workspace
+.history/
+
+### Eclipse / STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
