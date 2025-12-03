@@ -8,13 +8,18 @@ import lombok.NoArgsConstructor;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
-@Data @NoArgsConstructor @AllArgsConstructor @Builder
-public class ActivityLogResponse {
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class SpotResponse {
     private UUID id;
-    private UUID userId;
-    private String userEmail;
-    private String action;
-    private String details;
+    private UUID floorId;
+    private String floorName;
+    private String spotNumber;
+    private String type;
+    private String status;
     private OffsetDateTime createdAt;
+    private OffsetDateTime updatedAt;
 }
 

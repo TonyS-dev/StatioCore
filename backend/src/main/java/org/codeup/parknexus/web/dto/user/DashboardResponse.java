@@ -5,11 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Data @NoArgsConstructor @AllArgsConstructor @Builder
 public class DashboardResponse {
     private Long activeReservations;
     private Long activeSessions;
     private Long totalReservations;
-    private Double outstandingFees;
+    private BigDecimal outstandingFees;
 }
 

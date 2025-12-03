@@ -5,11 +5,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.OffsetDateTime;
+import java.util.UUID;
+
 @Data @NoArgsConstructor @AllArgsConstructor @Builder
 public class UserResponse {
-    private Long id;
-    private String username;
+    private UUID id;
+    private String email;
+    private String fullName;
     private String role;
-    private boolean active;
+    private Boolean isActive;
+    private OffsetDateTime createdAt;
 }
 

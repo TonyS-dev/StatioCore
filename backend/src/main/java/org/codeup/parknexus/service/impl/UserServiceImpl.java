@@ -50,7 +50,7 @@ public class UserServiceImpl implements IUserService {
                 .activeReservations(activeReservations)
                 .activeSessions(activeSessions)
                 .totalReservations(totalReservations)
-                .outstandingFees(outstandingFees.doubleValue())
+                .outstandingFees(outstandingFees)
                 .build();
     }
 }

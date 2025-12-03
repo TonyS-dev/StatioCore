@@ -5,13 +5,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Data @NoArgsConstructor @AllArgsConstructor @Builder
 public class CheckInResponse {
-    private Long sessionId;
-    private Long spotId;
-    private LocalDateTime checkInTime;
+    private UUID sessionId;
+    private UUID spotId;
+    private String spotNumber;
+    private OffsetDateTime checkInTime;
     private String message;
 }
 
