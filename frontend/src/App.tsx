@@ -31,6 +31,9 @@ import ProtectedRoute from './components/shared/ProtectedRoute';
 // 404 Page
 import NotFound from './pages/NotFound';
 
+// Landing Page
+import LandingPage from './pages/LandingPage';
+
 // Create React Query client
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -63,6 +66,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           {/* Public Routes */}
+          <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
 
@@ -99,7 +103,6 @@ function App() {
           </Route>
 
           {/* Default Redirects */}
-          <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
