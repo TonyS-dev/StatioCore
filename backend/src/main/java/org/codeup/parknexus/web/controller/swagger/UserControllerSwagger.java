@@ -1,4 +1,4 @@
-package org.codeup.parknexus.web.controller;
+package org.codeup.parknexus.web.controller.swagger;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
