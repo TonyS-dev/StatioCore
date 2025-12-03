@@ -38,6 +38,17 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Core parking operations service.
+ *
+ * Handles: check-in, checkout, fee calculation, spot availability.
+ * Business rules:
+ * - One active session per user
+ * - Minimum fee $1.00
+ * - Spot freed before payment processed
+ *
+ * @author TonyS-dev
+ */
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -145,7 +156,7 @@ public class ParkingServiceImpl implements IParkingService {
         ParkingSession session = sessionRepository.findById(sessionId)
             .orElseThrow(() -> new ResourceNotFoundException("Session not found"));
 
-        // Prevent double checkout (idempotency)
+        // Prevent double checkout (idempotency protection)
         if (session.getCheckOutTime() != null) {
             logger.warn("Attempted double checkout for session: {}", sessionId);
             throw new IllegalArgumentException("Session already checked out");
@@ -157,23 +168,26 @@ public class ParkingServiceImpl implements IParkingService {
 
             Duration duration = Duration.between(session.getCheckInTime(), now);
             long durationMinutes = duration.toMinutes();
-            // Calculate fee
+
+            // Calculate fee using strategy pattern (STANDARD, VIP rates)
             ParkingSpot spot = session.getSpot();
             String strategyKey = getStrategyKeyForSpotType(spot.getType());
             IFeeCalculationStrategy strategy = feeCalculatorFactory.getStrategy(strategyKey);
             BigDecimal fee = strategy.calculateFee(duration);
 
-            // Apply minimum charge of $1.00
+            // Enforce minimum charge of $1.00 (business rule)
             if (fee.compareTo(BigDecimal.ONE) < 0) {
                 fee = BigDecimal.ONE;
             }
 
             session.setAmountDue(fee);
             session.setDurationMinutes(durationMinutes);
-            // Mark session as completed prior to payment
+
+            // IMPORTANT: Set session to COMPLETED before payment processing
+            // This ensures spot is freed even if payment fails
             session.setStatus(SessionStatus.COMPLETED);
 
-            // Free up the spot
+            // Free up spot immediately for next user
             spot.setStatus(SpotStatus.AVAILABLE);
             spotRepository.save(spot);
             sessionRepository.save(session);

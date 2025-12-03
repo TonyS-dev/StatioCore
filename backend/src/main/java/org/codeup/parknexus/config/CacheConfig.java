@@ -10,6 +10,16 @@ import org.springframework.context.annotation.Primary;
 
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Cache configuration using Caffeine for performance optimization.
+ *
+ * Short-term cache (30s): Frequently accessed data (dashboards, spot availability)
+ * Long-term cache (10min): Static data (buildings, floors)
+ *
+ * Cache is evicted on data-modifying operations (check-in, checkout).
+ *
+ * @author TonyS-dev
+ */
 @Configuration
 @EnableCaching
 public class CacheConfig {
@@ -17,13 +27,14 @@ public class CacheConfig {
     @Bean @Primary
     public CacheManager cacheManager() {
         CaffeineCacheManager cacheManager = new CaffeineCacheManager(
-            "availableSpots",
-            "buildingStats",
-            "floorStats",
-            "userDashboard",
-            "adminDashboard"
+            "availableSpots",    // Evicted on check-in/checkout
+            "buildingStats",     // Evicted on building changes
+            "floorStats",        // Evicted on floor changes
+            "userDashboard",     // 30s TTL for real-time feel
+            "adminDashboard"     // 30s TTL for admin monitoring
         );
 
+        // Short-term cache: 30 seconds TTL, max 1000 entries
         cacheManager.setCaffeine(Caffeine.newBuilder()
             .maximumSize(1000)
             .expireAfterWrite(30, TimeUnit.SECONDS)

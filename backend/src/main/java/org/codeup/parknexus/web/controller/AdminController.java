@@ -27,6 +27,18 @@ import org.springframework.web.bind.annotation.*;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
+/**
+ * Admin endpoints for system management: dashboard, buildings, users, and logs.
+ * Key rules:
+ * - ADMIN role required for all routes under /api/admin
+ * - Emails must be unique when creating/updating users
+ * - Passwords are stored as BCrypt hashes
+ * - Activity logs are recorded for admin actions
+ *
+ * Keep responses lightweight for dashboards (use counts, not full lists).
+ *
+ * author: TonyS-dev
+ */
 @RestController
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
@@ -42,16 +54,19 @@ public class AdminController {
 
     @GetMapping("/dashboard")
     public ResponseEntity<AdminDashboardResponse> dashboard() {
+        // Dashboard is cached downstream; returns system-wide KPIs
         return ResponseEntity.ok(adminService.getDashboard());
     }
 
     @GetMapping("/buildings")
     public ResponseEntity<java.util.List<BuildingResponse>> getBuildings() {
+        // Returns all buildings with aggregated counts used by admin UI
         return ResponseEntity.ok(adminService.getAllBuildings());
     }
 
     @PostMapping("/buildings")
     public ResponseEntity<BuildingResponse> createBuilding(@Valid @RequestBody BuildingRequest request) {
+        // Name uniqueness enforced in service; returns created building
         return ResponseEntity.ok(adminService.createBuilding(request));
     }
 
@@ -63,6 +78,7 @@ public class AdminController {
             @RequestParam(required = false) String action,
             @RequestParam(required = false) String startDate,
             @RequestParam(required = false) String endDate) {
+        // Filters are optional and validated defensively; returns paginated logs
         Pageable pageable = PageRequest.of(page, size);
         
         // Parse userId if provided
@@ -119,6 +135,7 @@ public class AdminController {
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(required = false) String role,
             @RequestParam(required = false) Boolean active) {
+        // Dynamic filters via specification, paginated for admin list
         Pageable pageable = PageRequest.of(page, size);
 
         // Build specification dynamically based on filters
@@ -144,7 +161,7 @@ public class AdminController {
 
     @PostMapping("/users")
     public ResponseEntity<UserResponse> createUser(@Valid @RequestBody CreateUserRequest request) {
-        // Check if user already exists
+        // Simple guard against duplicate email; password hashed via encoder
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new BadRequestException("User already exists with email: " + request.getEmail());
         }
@@ -172,7 +189,7 @@ public class AdminController {
 
     @PostMapping("/users/admin")
     public ResponseEntity<UserResponse> createAdmin(@Valid @RequestBody RegisterRequest request) {
-        // Check if user already exists
+        // Convenience endpoint to create ADMIN users; same uniqueness guard
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new BadRequestException("User already exists with email: " + request.getEmail());
         }
@@ -201,6 +218,7 @@ public class AdminController {
     public ResponseEntity<UserResponse> updateUser(
             @PathVariable UUID userId,
             @Valid @RequestBody UpdateUserRequest request) {
+        // Partial update; email uniqueness enforced when changed
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BadRequestException("User not found"));
 
@@ -236,6 +254,7 @@ public class AdminController {
     public ResponseEntity<UserResponse> updateUserStatus(
             @PathVariable UUID userId,
             @RequestBody UpdateStatusRequest request) {
+        // Toggle active status; useful for account disable/enable
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BadRequestException("User not found"));
 
@@ -330,4 +349,3 @@ public class AdminController {
         return ResponseEntity.noContent().build();
     }
 }
-

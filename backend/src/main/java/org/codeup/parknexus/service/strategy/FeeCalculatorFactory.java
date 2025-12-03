@@ -6,8 +6,10 @@ import java.util.Optional;
 import org.springframework.stereotype.Component;
 
 /**
- * Simple factory for fee calculation strategies. Strategies are looked up by key.
- * It relies on Spring to wire implementations as beans and then provide them here if needed.
+ * Factory for fee calculation strategies (Strategy Pattern).
+ * Maps spot types to pricing strategies: STANDARD ($10/hr), VIP ($15/hr).
+ *
+ * @author TonyS-dev
  */
 @Component
 public class FeeCalculatorFactory {
@@ -15,13 +17,13 @@ public class FeeCalculatorFactory {
     private final Map<String, IFeeCalculationStrategy> strategies;
 
     public FeeCalculatorFactory(Optional<Map<String, IFeeCalculationStrategy>> strategies) {
-        // Spring will autowire all IFeeCalculationStrategy beans keyed by bean name.
+        // Spring autowires all IFeeCalculationStrategy beans
         this.strategies = strategies.orElse(Map.of());
     }
 
     /**
-     * Get a strategy by key. Keys are case-insensitive.
-     * Common keys: "STANDARD", "VIP", or the bean simple class names like "standardFeeStrategy".
+     * Get pricing strategy by key (case-insensitive).
+     * Keys: "STANDARD", "VIP", or bean names like "standardFeeStrategy".
      */
     public IFeeCalculationStrategy getStrategy(String key) {
         if (key == null) {

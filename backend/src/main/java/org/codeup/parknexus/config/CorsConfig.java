@@ -9,6 +9,14 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
+/**
+ * CORS configuration for frontend integration.
+ * Allows React (3000), Vite (5173), Angular (4200) dev servers.
+ *
+ * Production: Replace with actual frontend domain.
+ *
+ * @author TonyS-dev
+ */
 @Configuration
 @RequiredArgsConstructor
 public class CorsConfig {
@@ -16,10 +24,11 @@ public class CorsConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
+        // Frontend development servers
         configuration.setAllowedOrigins(List.of(
-                "http://localhost:3000",
-                "http://localhost:5173",
-                "http://localhost:4200"
+                "http://localhost:3000",   // React
+                "http://localhost:5173",   // Vite
+                "http://localhost:4200"    // Angular
         ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));

@@ -22,6 +22,14 @@ import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
+/**
+ * Payment processing service (simulated for MVP).
+ *
+ * Validates session completion, enforces minimum charge,
+ * prevents duplicate payments, generates transaction IDs.
+ *
+ * @author TonyS-dev
+ */
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -31,7 +39,7 @@ public class PaymentServiceImpl implements IPaymentService {
     private final IParkingSessionRepository parkingSessionRepository;
     private final IActivityLogService activityLogService;
 
-    // Pricing: $5/hour base rate
+    // Pricing configuration (future: move to database/config)
     private static final BigDecimal HOURLY_RATE = new BigDecimal("5.00");
     private static final BigDecimal MINIMUM_FEE = new BigDecimal("2.00");
 
@@ -43,11 +51,12 @@ public class PaymentServiceImpl implements IPaymentService {
         ParkingSession session = parkingSessionRepository.findById(sessionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Parking session not found"));
 
-        // Validate session is ready for payment
+        // Validate: Session must be COMPLETED before accepting payment
         if (session.getStatus() != SessionStatus.COMPLETED) {
             throw new PaymentException("Session must be completed before payment");
         }
 
+        // Validate: Amount must be calculated and positive (minimum $1.00 enforced upstream)
         if (session.getAmountDue() == null) {
             throw new PaymentException("Amount due not calculated. Please complete the checkout process.");
         }
@@ -55,7 +64,7 @@ public class PaymentServiceImpl implements IPaymentService {
             throw new PaymentException("Invalid parking charge. Amount must be greater than $0.00");
         }
 
-        // Check if already paid
+        // Prevent duplicate payment (idempotency check)
         if (paymentRepository.findAll().stream()
                 .anyMatch(p -> p.getSession().getId().equals(sessionId)
                         && p.getStatus() == PaymentStatus.SUCCESS)) {

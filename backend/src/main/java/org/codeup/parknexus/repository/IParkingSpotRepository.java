@@ -31,11 +31,19 @@ public interface IParkingSpotRepository extends JpaRepository<ParkingSpot, UUID>
 
     List<ParkingSpot> findByStatus(SpotStatus status);
 
-    // Strict availability: AVAILABLE and not reserved
+    /**
+     * STRICT AVAILABILITY: Returns only truly available spots.
+     * A spot is available ONLY if: status=AVAILABLE AND reservedBy IS NULL
+     * Reserved spots are excluded even if status is AVAILABLE.
+     */
     List<ParkingSpot> findByStatusAndReservedByIsNull(SpotStatus status);
     long countByStatusAndReservedByIsNull(SpotStatus status);
 
-    // Find all spots with eager loading of Floor and Building for admin views
+    /**
+     * Eager fetch optimization: Prevents N+1 query problem by loading
+     * Floor and Building relationships in a single query.
+     * Use for admin dashboard where we need building/floor names.
+     */
     @Query("SELECT s FROM ParkingSpot s LEFT JOIN FETCH s.floor f LEFT JOIN FETCH f.building LEFT JOIN FETCH s.reservedBy")
     List<ParkingSpot> findAllWithFloorAndBuilding();
 
