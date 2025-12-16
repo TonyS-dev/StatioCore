@@ -29,6 +29,7 @@ import org.codeup.parknexus.web.mapper.ParkingSessionMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.codeup.parknexus.web.dto.admin.BuildingResponse;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -93,9 +94,10 @@ public class UserController {
      * Get all buildings for parking spot search filtering (Public endpoint).
      */
     @GetMapping("/buildings")
-    @Operation(summary = "Get all buildings", description = "Retrieve all buildings with floor and spot counts for filtering. Public endpoint.")
+    @Operation(summary = "Get all buildings", description = "Retrieve all buildings with floor and spot counts for filtering.")
     @ApiResponse(responseCode = "200", description = "Buildings retrieved successfully")
-    public ResponseEntity<List<org.codeup.parknexus.web.dto.admin.BuildingResponse>> getBuildings() {
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<List<BuildingResponse>> getBuildings() {
         return ResponseEntity.ok(adminService.getAllBuildings());
     }
 

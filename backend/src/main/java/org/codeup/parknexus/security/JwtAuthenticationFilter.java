@@ -42,10 +42,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 String role = claims.get("role", String.class);
 
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                    UUID.fromString(userId),
-                    null,
-                    Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role))
-                );
+                        UUID.fromString(userId),
+                        null,
+                        Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role)));
 
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -69,9 +68,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
             Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token);
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token);
             return true;
         } catch (Exception ex) {
             logger.error("Invalid JWT token", ex);
@@ -82,11 +81,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private Claims getClaimsFromToken(String token) {
         SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
         return Jwts.parserBuilder()
-            .setSigningKey(key)
-            .build()
-            .parseClaimsJws(token)
-            .getBody();
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 }
-
-

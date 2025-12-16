@@ -33,7 +33,7 @@ const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
     return <Navigate to="/login" replace />;
   }
 
-  // SECURITY FIX: Get role from JWT token, not from stored user object
+  // Get role from JWT token, not from stored user object
   // This prevents users from tampering with sessionStorage to escalate privileges
   const roleFromToken = getUserRole();
 
