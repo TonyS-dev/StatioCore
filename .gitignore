@@ -13,6 +13,7 @@ Desktop.ini
 *.tmp
 *.bak
 *.swp
+.idea
 
 # ===================================================================
 # 2. Security & Environment

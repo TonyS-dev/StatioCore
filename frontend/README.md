@@ -1,6 +1,6 @@
-# ParkNexus — Frontend
+# Statio Core — Frontend
 
-This folder contains the Vite + React + TypeScript frontend for the ParkNexus project.
+This folder contains the Vite + React + TypeScript frontend for the Statio Core project.
 
 ## Overview
 

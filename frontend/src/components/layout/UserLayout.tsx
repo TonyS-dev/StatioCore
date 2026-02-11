@@ -49,7 +49,7 @@ const UserLayout = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <Car className="h-8 w-8 text-teal-600" />
-              <h1 className="text-2xl font-bold text-gray-900">ParkNexus</h1>
+              <h1 className="text-2xl font-bold text-gray-900">Statio Core</h1>
             </div>
             <div className="flex items-center space-x-4">
               <span className="text-sm text-gray-600">
@@ -129,7 +129,7 @@ const UserLayout = () => {
       <footer className="bg-white border-t">
         <div className="container mx-auto px-4 py-6">
           <p className="text-center text-sm text-gray-600">
-            © 2025 ParkNexus. All rights reserved.
+            © 2025 Statio Core. All rights reserved.
           </p>
         </div>
       </footer>

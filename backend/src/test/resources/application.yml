@@ -1,6 +1,6 @@
 spring:
   application:
-    name: parknexus
+    name: statio-core
   profiles:
     active: test
 
@@ -36,7 +36,7 @@ spring:
 logging:
   level:
     root: WARN
-    org.codeup.parknexus: DEBUG
+    org.codeup.statiocore: DEBUG
     org.hibernate: WARN
     org.springframework.security: WARN
 

@@ -1,6 +1,6 @@
 <div style="text-align: center;">
 
-# Parking Nexus
+# Statio Core
 
 **A lightweight Parking Lot Management System (MVP)**
 
@@ -17,7 +17,7 @@
 
 ## 🚀 Overview
 
-Parking Nexus is an MVP parking lot management system with a Spring Boot backend and a Vite + React + TypeScript frontend. The focus is on functionality: user authentication (JWT), searching & reserving parking spots, checking in/out, session billing, and admin tools for user and activity log management.
+Statio Core is an MVP parking lot management system with a Spring Boot backend and a Vite + React + TypeScript frontend. The focus is on functionality: user authentication (JWT), searching & reserving parking spots, checking in/out, session billing, and admin tools for user and activity log management.
 
 This repository contains the full-stack scaffold with Docker support and local development scripts.
 
@@ -106,8 +106,8 @@ Create a `.env` file in the project root (example below):
 
 ```env
 # Database (local / docker)
-DB_NAME=parknexus_db
-DB_USER=parknexus_user
+DB_NAME=statiocore_db
+DB_USER=statiocore_user
 DB_PASSWORD=change_me
 DB_PORT=5432
 
@@ -133,7 +133,7 @@ Note: For local development with the backend run via Gradle, application.yml use
 
 ## 🚀 Quick Start (Recommended)
 
-**The easiest way to run ParkNexus is using the provided setup and run scripts:**
+**The easiest way to run Statio Core is using the provided setup and run scripts:**
 
 ### Linux/macOS
 ```bash
@@ -246,7 +246,7 @@ Dev helper scripts (see `scripts/dev/`):
 
 ## 📚 API Documentation (Swagger/OpenAPI)
 
-ParkNexus includes comprehensive API documentation using **Swagger/OpenAPI 3.0**. All endpoints are documented with:
+Statio Core includes comprehensive API documentation using **Swagger/OpenAPI 3.0**. All endpoints are documented with:
 - Request/response schemas
 - Authentication requirements
 - Parameter descriptions

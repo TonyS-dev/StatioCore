@@ -73,7 +73,7 @@ const LoginPage = () => {
               <Car className="h-8 w-8 text-white" />
             </div>
           </div>
-          <CardTitle className="text-2xl font-bold">Welcome to ParkNexus</CardTitle>
+          <CardTitle className="text-2xl font-bold">Welcome to Statio Core</CardTitle>
           <CardDescription>Enter your credentials to access your account</CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
@@ -116,7 +116,7 @@ const LoginPage = () => {
             <div className="bg-teal-50 border border-teal-200 rounded-md p-3">
               <p className="text-xs text-teal-800 font-semibold mb-2">Demo Accounts:</p>
               <div className="space-y-1 text-xs text-teal-700">
-                <p><strong>Admin:</strong> admin@parknexus.com / password123</p>
+                <p><strong>Admin:</strong> admin@statiocore.com / password123</p>
                 <p><strong>User:</strong> john.doe@example.com / password123</p>
               </div>
             </div>

@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # ============================================
-# ParkNexus Setup Script (Linux/macOS)
+# Statio Core Setup Script (Linux/macOS)
 # ============================================
 
 set -e  # Exit on error
 
 echo "╔════════════════════════════════════════╗"
-echo "║   ParkNexus Setup - Linux/macOS        ║"
+echo "║   Statio Core Setup - Linux/macOS      ║"
 echo "╚════════════════════════════════════════╝"
 echo ""
 
@@ -155,7 +155,7 @@ prompt_install_docker() {
             install_docker_macos
         fi
     else
-        print_error "Docker is required to run ParkNexus"
+        print_error "Docker is required to run Statio Core"
         print_info "Please install Docker manually and re-run this script"
         exit 1
     fi

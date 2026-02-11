@@ -461,7 +461,7 @@ const UserManagement = () => {
               <Input
                 id="email"
                 type="email"
-                placeholder="user@parknexus.com"
+                placeholder="user@statiocore.com"
                 value={newUser.email}
                 onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
                 disabled={createUserMutation.isPending}
@@ -554,7 +554,7 @@ const UserManagement = () => {
                 <Input
                   id="editEmail"
                   type="email"
-                  placeholder="user@parknexus.com"
+                  placeholder="user@statiocore.com"
                   value={selectedUser.email}
                   onChange={(e) =>
                     setSelectedUser({ ...selectedUser, email: e.target.value })

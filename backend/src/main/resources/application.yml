@@ -6,7 +6,7 @@ spring:
   profiles:
     active: local
   application:
-    name: parknexus-backend
+    name: statio-core-backend
   jpa:
     hibernate:
       ddl-auto: validate # Flyway manages the creation/update of the schema
@@ -82,7 +82,7 @@ spring:
 logging:
   level:
     root: WARN
-    org.codeup.parknexus: INFO
+    org.codeup.statiocore: INFO
     org.springframework.web: WARN
     org.hibernate.SQL: WARN
 
@@ -105,7 +105,7 @@ springdoc:
     tags-sorter: alpha
     try-it-out-enabled: true
   info:
-    title: ParkNexus API
+    title: Statio Core API
     description: Multi-building Parking Lot Management System
     version: 1.0.0-MVP
     contact:

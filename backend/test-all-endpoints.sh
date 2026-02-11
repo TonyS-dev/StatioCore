@@ -1,6 +1,6 @@
 #!/bin/bash
 ################################################################################
-# PARK-NEXUS API COMPLETE TESTING SCRIPT
+# STATIO-CORE API COMPLETE TESTING SCRIPT
 # Tests all endpoints and verifies all 5 buildings exist
 ################################################################################
 BASE_URL="http://localhost:8080"
@@ -32,10 +32,10 @@ extract_token() {
 # AUTHENTICATION
 ################################################################################
 log_section "1. AUTHENTICATION"
-log_test "1.1 Login as Admin (admin@parknexus.com)"
+log_test "1.1 Login as Admin (admin@statiocore.com)"
 ADMIN_LOGIN=$(curl -s -X POST "$BASE_URL/api/auth/login" \
   -H "Content-Type: application/json" \
-  -d '{"email":"admin@parknexus.com","password":"password123"}')
+  -d '{"email":"admin@statiocore.com","password":"password123"}')
 ADMIN_TOKEN=$(extract_token "$ADMIN_LOGIN")
 if [ -z "$ADMIN_TOKEN" ]; then
     log_error "Failed to get admin token"
@@ -191,7 +191,7 @@ NEW_ADMIN=$(curl -s -X POST "$BASE_URL/api/admin/users/admin" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $ADMIN_TOKEN" \
   -d '{
-    "email": "superadmin@parknexus.com",
+    "email": "superadmin@statiocore.com",
     "password": "securepass123",
     "fullName": "Super Admin"
   }')
@@ -206,7 +206,7 @@ fi
 log_test "4.2 Verify New Admin is in User List (role=ADMIN)"
 UPDATED_ADMINS=$(curl -s -X GET "$BASE_URL/api/admin/users?role=ADMIN" \
   -H "Authorization: Bearer $ADMIN_TOKEN")
-NEW_ADMIN_IN_LIST=$(echo "$UPDATED_ADMINS" | jq '.items[] | select(.email == "superadmin@parknexus.com")')
+NEW_ADMIN_IN_LIST=$(echo "$UPDATED_ADMINS" | jq '.items[] | select(.email == "superadmin@statiocore.com")')
 if [ ! -z "$NEW_ADMIN_IN_LIST" ]; then
     log_success "New admin found in user list!"
     echo "$NEW_ADMIN_IN_LIST" | jq '.'
@@ -216,7 +216,7 @@ fi
 log_test "4.3 Login with New Admin Account"
 NEW_ADMIN_LOGIN=$(curl -s -X POST "$BASE_URL/api/auth/login" \
   -H "Content-Type: application/json" \
-  -d '{"email":"superadmin@parknexus.com","password":"securepass123"}')
+  -d '{"email":"superadmin@statiocore.com","password":"securepass123"}')
 NEW_ADMIN_TOKEN=$(extract_token "$NEW_ADMIN_LOGIN")
 if [ -z "$NEW_ADMIN_TOKEN" ]; then
     log_error "Failed to login with new admin"

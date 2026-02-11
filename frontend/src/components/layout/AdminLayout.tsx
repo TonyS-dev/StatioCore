@@ -49,7 +49,7 @@ const AdminLayout = () => {
             <div className="flex items-center space-x-2">
               <Shield className="h-8 w-8" />
               <div>
-                <h1 className="text-2xl font-bold">ParkNexus Admin</h1>
+                <h1 className="text-2xl font-bold">Statio Core Admin</h1>
                 <p className="text-xs text-teal-200">Management Portal</p>
               </div>
             </div>
@@ -132,7 +132,7 @@ const AdminLayout = () => {
       <footer className="bg-white border-t mt-auto">
         <div className="container mx-auto px-4 py-6">
           <p className="text-center text-sm text-gray-600">
-            © 2025 ParkNexus Admin Panel. All rights reserved.
+            © 2025 Statio Core Admin Panel. All rights reserved.
           </p>
         </div>
       </footer>

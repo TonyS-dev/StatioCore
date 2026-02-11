@@ -1,11 +1,11 @@
 # ============================================
-# ParkNexus Setup Script (Windows)
+# Statio Core Setup Script (Windows)
 # ============================================
 
 $ErrorActionPreference = "Stop"
 
 Write-Host "╔════════════════════════════════════════╗" -ForegroundColor Cyan
-Write-Host "║   ParkNexus Setup - Windows            ║" -ForegroundColor Cyan
+Write-Host "║   Statio Core Setup - Windows          ║" -ForegroundColor Cyan
 Write-Host "╚════════════════════════════════════════╝" -ForegroundColor Cyan
 Write-Host ""
 
@@ -74,7 +74,7 @@ function Install-DockerPrompt {
         exit 0
     }
     else {
-        Print-Error "Docker is required to run ParkNexus"
+        Print-Error "Docker is required to run Statio Core"
         Print-Info "Please install Docker manually and re-run this script"
         exit 1
     }

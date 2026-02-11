@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # ============================================
-# ParkNexus Run Script (Linux/macOS)
+# Statio Core Run Script (Linux/macOS)
 # ============================================
 
 set -e
 
 echo "╔════════════════════════════════════════╗"
-echo "║   ParkNexus - Starting Application     ║"
+echo "║   Statio Core - Starting Application   ║"
 echo "╚════════════════════════════════════════╝"
 echo ""
 
@@ -66,7 +66,7 @@ docker compose ps
 
 echo ""
 echo "╔═══════════════════════════════════════════╗"
-echo "║          ParkNexus URLs                   ║"
+echo "║          Statio Core URLs                 ║"
 echo "╠═══════════════════════════════════════════╣"
 echo "║  Frontend:   http://localhost:80         ║"
 echo "║  Backend:    http://localhost:8080       ║"

@@ -1,6 +1,6 @@
-# 🚀 ParkNexus Setup & Run Scripts
+# 🚀 Statio Core Setup & Run Scripts
 
-Cross-platform scripts to set up and run ParkNexus with a single command.
+Cross-platform scripts to set up and run Statio Core with a single command.
 
 ## 📋 Prerequisites
 

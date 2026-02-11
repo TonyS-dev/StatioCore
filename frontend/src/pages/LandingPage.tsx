@@ -40,7 +40,7 @@ const LandingPage = () => {
             <div className="bg-teal-600 rounded-full p-2 flex items-center justify-center">
               <Car className="h-6 w-6 text-white" />
             </div>
-            <span className="font-semibold text-lg text-gray-900">ParkNexus</span>
+            <span className="font-semibold text-lg text-gray-900">Statio Core</span>
           </div>
           <div className="flex items-center space-x-3">
             <Link to="/login" className="text-sm font-medium text-gray-700 hover:text-teal-700">
@@ -65,7 +65,7 @@ const LandingPage = () => {
               <span className="block text-teal-600">without the chaos.</span>
             </h1>
             <p className="text-base sm:text-lg text-gray-600 max-w-xl">
-              ParkNexus helps buildings, offices, and residential complexes manage parking spots, reservations,
+              Statio Core helps buildings, offices, and residential complexes manage parking spots, reservations,
               and active sessions in one clean, real-time dashboard.
             </p>
             <div className="flex flex-wrap gap-3">
@@ -133,7 +133,7 @@ const LandingPage = () => {
                 </div>
 
                 <p className="text-[11px] text-gray-400">
-                  Demo data shown. Integrate ParkNexus with your backend to power real buildings and campuses.
+                  Demo data shown. Integrate Statio Core with your backend to power real buildings and campuses.
                 </p>
               </CardContent>
             </Card>
@@ -143,7 +143,7 @@ const LandingPage = () => {
         {/* Features grid */}
         <section className="bg-white border-t border-b border-gray-100">
           <div className="max-w-6xl mx-auto px-4 py-12">
-            <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-6">Why teams use ParkNexus</h2>
+            <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-6">Why teams use Statio Core</h2>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {features.map((feature) => {
                 const Icon = feature.icon;
@@ -192,7 +192,7 @@ const LandingPage = () => {
       {/* Footer */}
       <footer className="border-t bg-white/80 backdrop-blur-sm">
         <div className="max-w-6xl mx-auto px-4 py-4 flex flex-col sm:flex-row items-center justify-between text-[11px] text-gray-500">
-          <p>© {new Date().getFullYear()} ParkNexus. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Statio Core. All rights reserved.</p>
           <p className="mt-1 sm:mt-0">
             Built with modern and powerful web tools.
           </p>

@@ -1,6 +1,6 @@
-# ParkNexus — Backend
+# Statio Core — Backend
 
-This folder contains the Spring Boot backend for ParkNexus.
+This folder contains the Spring Boot backend for Statio Core.
 
 Overview
 --------

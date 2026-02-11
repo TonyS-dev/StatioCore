@@ -1,15 +1,15 @@
 networks:
-  parknexus-network:
+  statio-core-network:
     driver: bridge
 
 services:
   # PostgreSQL Database service
   postgres:
     image: postgres:15-alpine
-    container_name: parknexus-postgres-db
+    container_name: statio-core-postgres-db
     restart: unless-stopped
     networks:
-      - parknexus-network
+      - statio-core-network
     env_file:
       - .env
     environment:
@@ -31,9 +31,9 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: parknexus-backend
+    container_name: statio-core-backend
     networks:
-      - parknexus-network
+      - statio-core-network
     depends_on:
       postgres:
         condition: service_healthy
@@ -60,9 +60,9 @@ services:
       dockerfile: Dockerfile
       args:
         VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8080/api}
-    container_name: parknexus-frontend
+    container_name: statio-core-frontend
     networks:
-      - parknexus-network
+      - statio-core-network
     ports:
       - "80:80"
     depends_on:
@@ -72,10 +72,10 @@ services:
   # Prometheus
   prometheus:
     image: prom/prometheus
-    container_name: parknexus-prometheus
+    container_name: statio-core-prometheus
     restart: unless-stopped
     networks:
-      - parknexus-network
+      - statio-core-network
     volumes:
       - ./backend/prometheus:/etc/prometheus
       - prometheus_data:/prometheus
@@ -85,10 +85,10 @@ services:
   # Grafana
   grafana:
     image: grafana/grafana
-    container_name: parknexus-grafana
+    container_name: statio-core-grafana
     restart: unless-stopped
     networks:
-      - parknexus-network
+      - statio-core-network
     ports:
       - "3000:3000"
     volumes:

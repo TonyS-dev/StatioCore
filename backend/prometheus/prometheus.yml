@@ -2,7 +2,7 @@ global:
   scrape_interval: 5s
 
 scrape_configs:
-  - job_name: 'parknexus'
+  - job_name: 'statio-core'
     metrics_path: '/actuator/prometheus'
     static_configs:
       - targets: ['backend:8080']

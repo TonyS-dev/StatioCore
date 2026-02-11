@@ -86,7 +86,7 @@ const RegisterPage = () => {
             </div>
           </div>
           <CardTitle className="text-2xl font-bold">Create Account</CardTitle>
-          <CardDescription>Register for ParkNexus to start parking</CardDescription>
+          <CardDescription>Register for Statio Core to start parking</CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
