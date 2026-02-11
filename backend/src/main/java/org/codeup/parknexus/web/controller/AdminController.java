@@ -31,6 +31,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -637,6 +642,17 @@ public class AdminController {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BadRequestException("User not found"));
 
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String currentUsername = auth != null ? auth.getName() : null;
+        boolean currentIsAdmin = auth != null && auth.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch(a -> a.equals("ROLE_ADMIN"));
+
+        // Prevent an admin from deleting themself
+        if (currentUsername != null && currentUsername.equalsIgnoreCase(user.getEmail()) && currentIsAdmin) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Admin users cannot delete themselves");
+        }
+
         // Soft delete - set deletedAt timestamp
         user.setDeletedAt(OffsetDateTime.now());
         user.setIsActive(false);
@@ -644,8 +660,8 @@ public class AdminController {
         userRepository.save(user);
 
         // Log user deletion
-        activityLogService.log(user, "USER_DELETED", 
-            String.format("User soft deleted: %s", user.getEmail()));
+        activityLogService.log(user, "USER_DELETED",
+                String.format("User soft deleted: %s", user.getEmail()));
 
         return ResponseEntity.noContent().build();
     }

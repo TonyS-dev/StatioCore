@@ -22,10 +22,10 @@ public class ActivityLogSpecification {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
             
-            // Eager load user relationship to avoid LazyInitializationException
-            if (query != null) {
-                root.fetch("user", JoinType.LEFT);
-            }
+           // Join user for filtering but don't fetch for count queries
+	   if (query != null && query.getResultType() != Long.class && query.getResultType() != long.class) {
+    		root.fetch("user", JoinType.LEFT);
+	    }
             
             if (userId != null) {
                 predicates.add(criteriaBuilder.equal(root.get("userId"), userId));
