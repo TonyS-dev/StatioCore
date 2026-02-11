@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { adminService } from '../../services/adminService';
+import { useAuth } from '../../hooks/useAuth';
 import { Role } from '../../types';
 import type { RegisterRequest, User } from '../../types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
@@ -37,6 +38,7 @@ import { useToast } from '../../components/ui/toast';
 const UserManagement = () => {
   const queryClient = useQueryClient();
   const toast = useToast();
+  const { user: currentUser } = useAuth();
   const [roleFilter, setRoleFilter] = useState<string>('');
   const [activeFilter, setActiveFilter] = useState<string>('');
   const [page, setPage] = useState(0);
@@ -132,6 +134,15 @@ const UserManagement = () => {
   };
 
   const handleToggleStatus = (user: User) => {
+    // Prevent admin from deactivating themselves
+    if (currentUser && currentUser.id === user.id && user.isActive && currentUser.role === Role.ADMIN) {
+      toast.push({
+        message: "Admins cannot deactivate their own account.",
+        variant: "error",
+      });
+      return;
+    }
+
     if (confirm(`Are you sure you want to ${user.isActive ? 'deactivate' : 'activate'} ${user.email}?`)) {
       updateStatusMutation.mutate({ userId: user.id, isActive: !user.isActive });
     }
@@ -157,6 +168,15 @@ const UserManagement = () => {
   };
 
   const handleDeleteUser = (user: User) => {
+    // Prevent admin from deleting themselves
+    if (currentUser && currentUser.email === user.email && currentUser.role === Role.ADMIN) {
+      toast.push({ 
+        message: 'Admin users cannot delete themselves', 
+        variant: 'error' 
+      });
+      return;
+    }
+
     if (
       confirm(
         `Are you sure you want to delete ${user.email}? This will soft delete the user.`
@@ -391,7 +411,8 @@ const UserManagement = () => {
                             variant="destructive"
                             size="sm"
                             onClick={() => handleDeleteUser(user)}
-                            disabled={deleteUserMutation.isPending}
+                            disabled={Boolean(deleteUserMutation.isPending) || (currentUser?.email === user.email && currentUser?.role === Role.ADMIN)}
+                            title={currentUser?.email === user.email && currentUser?.role === Role.ADMIN ? "Admin users cannot delete themselves" : "Delete user"}
                           >
                             Delete
                           </Button>

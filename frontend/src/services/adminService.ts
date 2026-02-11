@@ -24,6 +24,15 @@ export const adminService = {
     return response.data;
   },
 
+  async getBuildings(pagination?: PageRequest): Promise<PageResponse<Building>> {
+    const params = new URLSearchParams();
+    if (pagination?.page !== undefined) params.append('page', pagination.page.toString());
+    if (pagination?.size !== undefined) params.append('size', pagination.size.toString());
+
+    const response = await api.get<PageResponse<Building>>(`/admin/buildings/paginated?${params.toString()}`);
+    return response.data;
+  },
+
   async getBuildingById(id: string): Promise<Building> {
     const response = await api.get<Building>(`/admin/buildings/${id}`);
     return response.data;
@@ -49,6 +58,15 @@ export const adminService = {
     return response.data;
   },
 
+  async getFloors(pagination?: PageRequest): Promise<PageResponse<any>> {
+    const params = new URLSearchParams();
+    if (pagination?.page !== undefined) params.append('page', pagination.page.toString());
+    if (pagination?.size !== undefined) params.append('size', pagination.size.toString());
+
+    const response = await api.get<PageResponse<any>>(`/admin/floors/paginated?${params.toString()}`);
+    return response.data;
+  },
+
   async createFloor(data: { floorNumber: number; buildingId: string }): Promise<any> {
     const response = await api.post<any>('/admin/floors', data);
     return response.data;
@@ -66,6 +84,15 @@ export const adminService = {
   // Spots
   async getAllSpots(): Promise<any[]> {
     const response = await api.get<any[]>('/admin/spots');
+    return response.data;
+  },
+
+  async getSpots(pagination?: PageRequest): Promise<PageResponse<any>> {
+    const params = new URLSearchParams();
+    if (pagination?.page !== undefined) params.append('page', pagination.page.toString());
+    if (pagination?.size !== undefined) params.append('size', pagination.size.toString());
+
+    const response = await api.get<PageResponse<any>>(`/admin/spots/paginated?${params.toString()}`);
     return response.data;
   },
 

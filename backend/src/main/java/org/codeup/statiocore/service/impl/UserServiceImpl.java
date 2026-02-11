@@ -16,6 +16,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.cache.annotation.Cacheable;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -68,7 +69,7 @@ public class UserServiceImpl implements IUserService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         BigDecimal averageSessionFee = completedSessions > 0
-                ? totalEarnings.divide(BigDecimal.valueOf(completedSessions), 2, java.math.RoundingMode.HALF_UP)
+                ? totalEarnings.divide(BigDecimal.valueOf(completedSessions), 2, RoundingMode.HALF_UP)
                 : BigDecimal.ZERO;
 
         // Build recent activity

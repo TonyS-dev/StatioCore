@@ -3,6 +3,8 @@ package org.codeup.statiocore.repository;
 import org.codeup.statiocore.domain.ParkingSpot;
 import org.codeup.statiocore.domain.enums.SpotStatus;
 import org.codeup.statiocore.domain.enums.SpotType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -46,6 +48,13 @@ public interface IParkingSpotRepository extends JpaRepository<ParkingSpot, UUID>
      */
     @Query("SELECT s FROM ParkingSpot s LEFT JOIN FETCH s.floor f LEFT JOIN FETCH f.building LEFT JOIN FETCH s.reservedBy")
     List<ParkingSpot> findAllWithFloorAndBuilding();
+
+    /**
+     * Paginated version of findAllWithFloorAndBuilding.
+     * Returns paginated spots with eager loaded floor and building relationships.
+     */
+    @Query("SELECT s FROM ParkingSpot s LEFT JOIN FETCH s.floor f LEFT JOIN FETCH f.building LEFT JOIN FETCH s.reservedBy")
+    Page<ParkingSpot> findAllWithFloorAndBuilding(Pageable pageable);
 
     // Count methods for populating response DTOs
     long countByFloorId(UUID floorId);

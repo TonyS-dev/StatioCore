@@ -60,6 +60,11 @@ const ParkingLotManagement = () => {
   const toast = useToast();
   const [activeTab, setActiveTab] = useState('buildings');
   
+  // Pagination states
+  const [buildingPage, setBuildingPage] = useState(0);
+  const [floorPage, setFloorPage] = useState(0);
+  const [spotPage, setSpotPage] = useState(0);
+  
   // Dialog states
   const [buildingDialog, setBuildingDialog] = useState(false);
   const [floorDialog, setFloorDialog] = useState(false);
@@ -72,23 +77,34 @@ const ParkingLotManagement = () => {
   const [floorForm, setFloorForm] = useState<FloorForm>({ floorNumber: 1, buildingId: '' });
   const [spotForm, setSpotForm] = useState<SpotForm>({ spotNumber: '', type: 'STANDARD', status: 'AVAILABLE', floorId: '' });
 
-  // Fetch data
-  const { data: buildings, isLoading: loadingBuildings } = useQuery({
-    queryKey: ['adminBuildings'],
+  // Fetch paginated data
+  const { data: buildingsData, isLoading: loadingBuildings } = useQuery({
+    queryKey: ['adminBuildings', buildingPage],
+    queryFn: () => adminService.getBuildings({ page: buildingPage, size: 10 }),
+    refetchInterval: 30000,
+  });
+
+  const { data: floorsData, isLoading: loadingFloors } = useQuery({
+    queryKey: ['adminFloors', floorPage],
+    queryFn: () => adminService.getFloors({ page: floorPage, size: 10 }),
+    refetchInterval: 30000,
+  });
+
+  const { data: spotsData, isLoading: loadingSpots } = useQuery({
+    queryKey: ['adminSpots', spotPage],
+    queryFn: () => adminService.getSpots({ page: spotPage, size: 10 }),
+    refetchInterval: 30000,
+  });
+
+  // Also fetch all buildings for the floor/spot forms
+  const { data: allBuildings } = useQuery({
+    queryKey: ['adminBuildingsAll'],
     queryFn: () => adminService.getAllBuildings(),
-    refetchInterval: 30000,
   });
 
-  const { data: floors, isLoading: loadingFloors } = useQuery({
-    queryKey: ['adminFloors'],
+  const { data: allFloors } = useQuery({
+    queryKey: ['adminFloorsAll'],
     queryFn: () => adminService.getAllFloors(),
-    refetchInterval: 30000,
-  });
-
-  const { data: spots, isLoading: loadingSpots } = useQuery({
-    queryKey: ['adminSpots'],
-    queryFn: () => adminService.getAllSpots(),
-    refetchInterval: 30000,
   });
 
   // Building mutations
@@ -96,6 +112,7 @@ const ParkingLotManagement = () => {
     mutationFn: (data: BuildingForm) => adminService.createBuilding(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['adminBuildings'] });
+      queryClient.invalidateQueries({ queryKey: ['adminBuildingsAll'] });
       setBuildingDialog(false);
       setBuildingForm({ name: '', address: '' });
       toast.push({ message: 'Building created successfully!', variant: 'success' });
@@ -109,6 +126,7 @@ const ParkingLotManagement = () => {
     mutationFn: ({ id, data }: { id: string; data: BuildingForm }) => adminService.updateBuilding(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['adminBuildings'] });
+      queryClient.invalidateQueries({ queryKey: ['adminBuildingsAll'] });
       setBuildingDialog(false);
       setBuildingForm({ name: '', address: '' });
       setEditMode(false);
@@ -124,6 +142,7 @@ const ParkingLotManagement = () => {
     mutationFn: (id: string) => adminService.deleteBuilding(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['adminBuildings'] });
+      queryClient.invalidateQueries({ queryKey: ['adminBuildingsAll'] });
       toast.push({ message: 'Building deleted successfully!', variant: 'success' });
     },
     onError: (error: Error) => {
@@ -136,7 +155,9 @@ const ParkingLotManagement = () => {
     mutationFn: (data: FloorForm) => adminService.createFloor(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['adminFloors'] });
+      queryClient.invalidateQueries({ queryKey: ['adminFloorsAll'] });
       queryClient.invalidateQueries({ queryKey: ['adminBuildings'] });
+      queryClient.invalidateQueries({ queryKey: ['adminBuildingsAll'] });
       setFloorDialog(false);
       setFloorForm({ floorNumber: 1, buildingId: '' });
       toast.push({ message: 'Floor created successfully!', variant: 'success' });
@@ -150,7 +171,9 @@ const ParkingLotManagement = () => {
     mutationFn: ({ id, data }: { id: string; data: FloorForm }) => adminService.updateFloor(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['adminFloors'] });
+      queryClient.invalidateQueries({ queryKey: ['adminFloorsAll'] });
       queryClient.invalidateQueries({ queryKey: ['adminBuildings'] });
+      queryClient.invalidateQueries({ queryKey: ['adminBuildingsAll'] });
       setFloorDialog(false);
       setFloorForm({ floorNumber: 1, buildingId: '' });
       setEditMode(false);
@@ -166,7 +189,9 @@ const ParkingLotManagement = () => {
     mutationFn: (id: string) => adminService.deleteFloor(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['adminFloors'] });
+      queryClient.invalidateQueries({ queryKey: ['adminFloorsAll'] });
       queryClient.invalidateQueries({ queryKey: ['adminBuildings'] });
+      queryClient.invalidateQueries({ queryKey: ['adminBuildingsAll'] });
       toast.push({ message: 'Floor deleted successfully!', variant: 'success' });
     },
     onError: (error: Error) => {
@@ -180,6 +205,7 @@ const ParkingLotManagement = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['adminSpots'] });
       queryClient.invalidateQueries({ queryKey: ['adminBuildings'] });
+      queryClient.invalidateQueries({ queryKey: ['adminBuildingsAll'] });
       setSpotDialog(false);
       setSpotForm({ spotNumber: '', type: 'STANDARD', status: 'AVAILABLE', floorId: '' });
       toast.push({ message: 'Parking spot created successfully!', variant: 'success' });
@@ -194,6 +220,7 @@ const ParkingLotManagement = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['adminSpots'] });
       queryClient.invalidateQueries({ queryKey: ['adminBuildings'] });
+      queryClient.invalidateQueries({ queryKey: ['adminBuildingsAll'] });
       setSpotDialog(false);
       setSpotForm({ spotNumber: '', type: 'STANDARD', status: 'AVAILABLE', floorId: '' });
       setEditMode(false);
@@ -210,6 +237,7 @@ const ParkingLotManagement = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['adminSpots'] });
       queryClient.invalidateQueries({ queryKey: ['adminBuildings'] });
+      queryClient.invalidateQueries({ queryKey: ['adminBuildingsAll'] });
       toast.push({ message: 'Parking spot deleted successfully!', variant: 'success' });
     },
     onError: (error: Error) => {
@@ -329,7 +357,7 @@ const ParkingLotManagement = () => {
     return colors[type as keyof typeof colors] || 'bg-teal-100 text-teal-800';
   };
 
-  if (loadingBuildings || loadingFloors || loadingSpots) {
+  if (loadingBuildings && buildingPage === 0 && loadingFloors && floorPage === 0 && loadingSpots && spotPage === 0) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
@@ -339,6 +367,18 @@ const ParkingLotManagement = () => {
       </div>
     );
   }
+
+  const buildings = buildingsData?.items || [];
+  const totalBuildings = buildingsData?.totalElements || 0;
+  const totalBuildingPages = buildingsData?.totalPages || 0;
+
+  const floors = floorsData?.items || [];
+  const totalFloors = floorsData?.totalElements || 0;
+  const totalFloorPages = floorsData?.totalPages || 0;
+
+  const spots = spotsData?.items || [];
+  const totalSpots = spotsData?.totalElements || 0;
+  const totalSpotPages = spotsData?.totalPages || 0;
 
   return (
     <div className="space-y-6">
@@ -357,7 +397,7 @@ const ParkingLotManagement = () => {
             <CardTitle className="text-sm font-medium text-gray-600">Total Buildings</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold">{buildings?.length || 0}</p>
+            <p className="text-2xl font-bold">{totalBuildings}</p>
           </CardContent>
         </Card>
 
@@ -366,26 +406,26 @@ const ParkingLotManagement = () => {
             <CardTitle className="text-sm font-medium text-gray-600">Total Floors</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold">{floors?.length || 0}</p>
+            <p className="text-2xl font-bold">{totalFloors}</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-gray-600">Total Spots</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-600">Total Parking Spots</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold">{spots?.length || 0}</p>
+            <p className="text-2xl font-bold">{totalSpots}</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-gray-600">Available Spots</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-600">Showing Page</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold text-green-600">
-              {spots?.filter((s: any) => s.status === 'AVAILABLE').length || 0}
+            <p className="text-2xl font-bold">
+              {activeTab === 'buildings' ? buildingPage + 1 : activeTab === 'floors' ? floorPage + 1 : spotPage + 1}
             </p>
           </CardContent>
         </Card>
@@ -403,9 +443,9 @@ const ParkingLotManagement = () => {
         <TabsContent value="buildings" className="space-y-4">
           <div className="flex justify-end">
             <Button onClick={() => {
-              setBuildingForm({ name: '', address: '' });
               setEditMode(false);
               setSelectedId(null);
+              setBuildingForm({ name: '', address: '' });
               setBuildingDialog(true);
             }}>
               <Plus className="h-4 w-4 mr-2" />
@@ -415,70 +455,104 @@ const ParkingLotManagement = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle>Buildings</CardTitle>
-              <CardDescription>Manage parking buildings</CardDescription>
+              <CardTitle>Buildings ({totalBuildings})</CardTitle>
+              <CardDescription>Showing page {buildingPage + 1} of {totalBuildingPages}</CardDescription>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Address</TableHead>
-                    <TableHead>Floors</TableHead>
-                    <TableHead>Total Spots</TableHead>
-                    <TableHead>Occupied</TableHead>
-                    <TableHead>Available</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {buildings && buildings.length > 0 ? (
-                    buildings.map((building: any) => (
-                      <TableRow key={building.id}>
-                        <TableCell className="font-medium">{building.name}</TableCell>
-                        <TableCell>{building.address}</TableCell>
-                        <TableCell>{building.totalFloors || 0}</TableCell>
-                        <TableCell>{building.totalSpots || 0}</TableCell>
-                        <TableCell>
-                          <Badge className="bg-red-100 text-red-800">
-                            {building.occupiedSpots || 0}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Badge className="bg-green-100 text-green-800">
-                            {building.availableSpots || 0}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end space-x-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleEditBuilding(building)}
-                            >
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="destructive"
-                              size="sm"
-                              onClick={() => handleDeleteBuilding(building.id, building.name)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={7} className="text-center py-8">
-                        <AlertCircle className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                        <p className="text-gray-600">No buildings found</p>
-                      </TableCell>
-                    </TableRow>
+              {loadingBuildings ? (
+                <div className="text-center py-4">
+                  <p className="text-gray-600">Loading buildings...</p>
+                </div>
+              ) : buildings.length > 0 ? (
+                <>
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Name</TableHead>
+                          <TableHead>Address</TableHead>
+                          <TableHead>Floors</TableHead>
+                          <TableHead>Total Spots</TableHead>
+                          <TableHead>Occupied</TableHead>
+                          <TableHead>Available</TableHead>
+                          <TableHead>Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {buildings.map((building: any) => (
+                          <TableRow key={building.id}>
+                            <TableCell className="font-medium">{building.name}</TableCell>
+                            <TableCell>{building.address}</TableCell>
+                            <TableCell>{building.totalFloors}</TableCell>
+                            <TableCell>{building.totalSpots}</TableCell>
+                            <TableCell>{building.occupiedSpots}</TableCell>
+                            <TableCell>{building.availableSpots}</TableCell>
+                            <TableCell className="space-x-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleEditBuilding(building)}
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="text-red-600 hover:text-red-700"
+                                onClick={() => handleDeleteBuilding(building.id, building.name)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+
+                  {/* Pagination */}
+                  {totalBuildingPages > 1 && (
+                    <div className="flex items-center justify-between mt-4">
+                      <Button
+                        variant="outline"
+                        onClick={() => setBuildingPage((p) => Math.max(0, p - 1))}
+                        disabled={buildingPage === 0}
+                      >
+                        Previous
+                      </Button>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm text-gray-600">Page</span>
+                        <Input
+                          type="number"
+                          min="1"
+                          max={totalBuildingPages}
+                          value={buildingPage + 1}
+                          onChange={(e) => {
+                            const newPage = parseInt(e.target.value) - 1;
+                            if (newPage >= 0 && newPage < totalBuildingPages) {
+                              setBuildingPage(newPage);
+                            }
+                          }}
+                          className="w-20 text-center"
+                        />
+                        <span className="text-sm text-gray-600">of {totalBuildingPages}</span>
+                      </div>
+                      <Button
+                        variant="outline"
+                        onClick={() => setBuildingPage((p) => Math.min(totalBuildingPages - 1, p + 1))}
+                        disabled={buildingPage === totalBuildingPages - 1}
+                      >
+                        Next
+                      </Button>
+                    </div>
                   )}
-                </TableBody>
-              </Table>
+                </>
+              ) : (
+                <div className="text-center py-8">
+                  <AlertCircle className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+                  <p className="text-gray-600 font-semibold">No buildings found</p>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -487,9 +561,9 @@ const ParkingLotManagement = () => {
         <TabsContent value="floors" className="space-y-4">
           <div className="flex justify-end">
             <Button onClick={() => {
-              setFloorForm({ floorNumber: 1, buildingId: '' });
               setEditMode(false);
               setSelectedId(null);
+              setFloorForm({ floorNumber: 1, buildingId: '' });
               setFloorDialog(true);
             }}>
               <Plus className="h-4 w-4 mr-2" />
@@ -499,67 +573,109 @@ const ParkingLotManagement = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle>Floors</CardTitle>
-              <CardDescription>Manage building floors</CardDescription>
+              <CardTitle>Floors ({totalFloors})</CardTitle>
+              <CardDescription>Showing page {floorPage + 1} of {totalFloorPages}</CardDescription>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Floor Number</TableHead>
-                    <TableHead>Building</TableHead>
-                    <TableHead>Total Spots</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {floors && floors.length > 0 ? (
-                    floors.map((floor: any) => (
-                      <TableRow key={floor.id}>
-                        <TableCell className="font-medium">Floor {floor.floorNumber}</TableCell>
-                        <TableCell>{floor.buildingName}</TableCell>
-                        <TableCell>{floor.spotCount || 0}</TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end space-x-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleEditFloor(floor)}
-                            >
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="destructive"
-                              size="sm"
-                              onClick={() => handleDeleteFloor(floor.id, floor.floorNumber)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={4} className="text-center py-8">
-                        <AlertCircle className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                        <p className="text-gray-600">No floors found</p>
-                      </TableCell>
-                    </TableRow>
+              {loadingFloors ? (
+                <div className="text-center py-4">
+                  <p className="text-gray-600">Loading floors...</p>
+                </div>
+              ) : floors.length > 0 ? (
+                <>
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Floor Number</TableHead>
+                          <TableHead>Building</TableHead>
+                          <TableHead>Parking Spots</TableHead>
+                          <TableHead>Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {floors.map((floor: any) => (
+                          <TableRow key={floor.id}>
+                            <TableCell className="font-medium">{floor.floorNumber}</TableCell>
+                            <TableCell>{floor.buildingName}</TableCell>
+                            <TableCell>{floor.spotCount}</TableCell>
+                            <TableCell className="space-x-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleEditFloor(floor)}
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="text-red-600 hover:text-red-700"
+                                onClick={() => handleDeleteFloor(floor.id, floor.floorNumber)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+
+                  {/* Pagination */}
+                  {totalFloorPages > 1 && (
+                    <div className="flex items-center justify-between mt-4">
+                      <Button
+                        variant="outline"
+                        onClick={() => setFloorPage((p) => Math.max(0, p - 1))}
+                        disabled={floorPage === 0}
+                      >
+                        Previous
+                      </Button>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm text-gray-600">Page</span>
+                        <Input
+                          type="number"
+                          min="1"
+                          max={totalFloorPages}
+                          value={floorPage + 1}
+                          onChange={(e) => {
+                            const newPage = parseInt(e.target.value) - 1;
+                            if (newPage >= 0 && newPage < totalFloorPages) {
+                              setFloorPage(newPage);
+                            }
+                          }}
+                          className="w-20 text-center"
+                        />
+                        <span className="text-sm text-gray-600">of {totalFloorPages}</span>
+                      </div>
+                      <Button
+                        variant="outline"
+                        onClick={() => setFloorPage((p) => Math.min(totalFloorPages - 1, p + 1))}
+                        disabled={floorPage === totalFloorPages - 1}
+                      >
+                        Next
+                      </Button>
+                    </div>
                   )}
-                </TableBody>
-              </Table>
+                </>
+              ) : (
+                <div className="text-center py-8">
+                  <AlertCircle className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+                  <p className="text-gray-600 font-semibold">No floors found</p>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
 
-        {/* Spots Tab */}
+        {/* Parking Spots Tab */}
         <TabsContent value="spots" className="space-y-4">
           <div className="flex justify-end">
             <Button onClick={() => {
-              setSpotForm({ spotNumber: '', type: 'STANDARD', status: 'AVAILABLE', floorId: '' });
               setEditMode(false);
               setSelectedId(null);
+              setSpotForm({ spotNumber: '', type: 'STANDARD', status: 'AVAILABLE', floorId: '' });
               setSpotDialog(true);
             }}>
               <Plus className="h-4 w-4 mr-2" />
@@ -569,68 +685,110 @@ const ParkingLotManagement = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle>Parking Spots</CardTitle>
-              <CardDescription>Manage individual parking spots</CardDescription>
+              <CardTitle>Parking Spots ({totalSpots})</CardTitle>
+              <CardDescription>Showing page {spotPage + 1} of {totalSpotPages}</CardDescription>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Spot Number</TableHead>
-                    <TableHead>Floor</TableHead>
-                    <TableHead>Building</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {spots && spots.length > 0 ? (
-                    spots.map((spot: any) => (
-                      <TableRow key={spot.id}>
-                        <TableCell className="font-medium">{spot.spotNumber}</TableCell>
-                        <TableCell>Floor {spot.floorNumber}</TableCell>
-                        <TableCell>{spot.buildingName}</TableCell>
-                        <TableCell>
-                          <Badge className={getTypeBadge(spot.type)} variant="outline">
-                            {spot.type}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Badge className={getStatusBadge(spot.status)} variant="outline">
-                            {spot.status.replace('_', ' ')}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end space-x-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleEditSpot(spot)}
-                            >
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="destructive"
-                              size="sm"
-                              onClick={() => handleDeleteSpot(spot.id, spot.spotNumber)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={6} className="text-center py-8">
-                        <AlertCircle className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                        <p className="text-gray-600">No parking spots found</p>
-                      </TableCell>
-                    </TableRow>
+              {loadingSpots ? (
+                <div className="text-center py-4">
+                  <p className="text-gray-600">Loading parking spots...</p>
+                </div>
+              ) : spots.length > 0 ? (
+                <>
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Spot Number</TableHead>
+                          <TableHead>Building</TableHead>
+                          <TableHead>Floor</TableHead>
+                          <TableHead>Type</TableHead>
+                          <TableHead>Status</TableHead>
+                          <TableHead>Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {spots.map((spot: any) => (
+                          <TableRow key={spot.id}>
+                            <TableCell className="font-medium">{spot.spotNumber}</TableCell>
+                            <TableCell>{spot.buildingName}</TableCell>
+                            <TableCell>Floor {spot.floorNumber}</TableCell>
+                            <TableCell>
+                              <Badge className={getTypeBadge(spot.type)}>
+                                {spot.type}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              <Badge className={getStatusBadge(spot.status)}>
+                                {spot.status}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="space-x-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleEditSpot(spot)}
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="text-red-600 hover:text-red-700"
+                                onClick={() => handleDeleteSpot(spot.id, spot.spotNumber)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+
+                  {/* Pagination */}
+                  {totalSpotPages > 1 && (
+                    <div className="flex items-center justify-between mt-4">
+                      <Button
+                        variant="outline"
+                        onClick={() => setSpotPage((p) => Math.max(0, p - 1))}
+                        disabled={spotPage === 0}
+                      >
+                        Previous
+                      </Button>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm text-gray-600">Page</span>
+                        <Input
+                          type="number"
+                          min="1"
+                          max={totalSpotPages}
+                          value={spotPage + 1}
+                          onChange={(e) => {
+                            const newPage = parseInt(e.target.value) - 1;
+                            if (newPage >= 0 && newPage < totalSpotPages) {
+                              setSpotPage(newPage);
+                            }
+                          }}
+                          className="w-20 text-center"
+                        />
+                        <span className="text-sm text-gray-600">of {totalSpotPages}</span>
+                      </div>
+                      <Button
+                        variant="outline"
+                        onClick={() => setSpotPage((p) => Math.min(totalSpotPages - 1, p + 1))}
+                        disabled={spotPage === totalSpotPages - 1}
+                      >
+                        Next
+                      </Button>
+                    </div>
                   )}
-                </TableBody>
-              </Table>
+                </>
+              ) : (
+                <div className="text-center py-8">
+                  <AlertCircle className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+                  <p className="text-gray-600 font-semibold">No parking spots found</p>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -640,9 +798,9 @@ const ParkingLotManagement = () => {
       <Dialog open={buildingDialog} onOpenChange={setBuildingDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{editMode ? 'Edit Building' : 'Create Building'}</DialogTitle>
+            <DialogTitle>{editMode ? 'Edit Building' : 'Create New Building'}</DialogTitle>
             <DialogDescription>
-              {editMode ? 'Update building information' : 'Add a new parking building'}
+              {editMode ? 'Update building details' : 'Add a new parking building to the system'}
             </DialogDescription>
           </DialogHeader>
 
@@ -651,9 +809,10 @@ const ParkingLotManagement = () => {
               <Label htmlFor="buildingName">Building Name</Label>
               <Input
                 id="buildingName"
-                placeholder="Main Parking Structure"
+                placeholder="Main Parking Building"
                 value={buildingForm.name}
                 onChange={(e) => setBuildingForm({ ...buildingForm, name: e.target.value })}
+                disabled={createBuildingMutation.isPending || updateBuildingMutation.isPending}
               />
             </div>
 
@@ -661,19 +820,31 @@ const ParkingLotManagement = () => {
               <Label htmlFor="buildingAddress">Address</Label>
               <Input
                 id="buildingAddress"
-                placeholder="123 Main St, City, State"
+                placeholder="123 Main St, Downtown"
                 value={buildingForm.address}
                 onChange={(e) => setBuildingForm({ ...buildingForm, address: e.target.value })}
+                disabled={createBuildingMutation.isPending || updateBuildingMutation.isPending}
               />
             </div>
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setBuildingDialog(false)}>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setBuildingDialog(false);
+                setEditMode(false);
+                setBuildingForm({ name: '', address: '' });
+              }}
+              disabled={createBuildingMutation.isPending || updateBuildingMutation.isPending}
+            >
               Cancel
             </Button>
-            <Button onClick={editMode ? handleUpdateBuilding : handleCreateBuilding}>
-              {editMode ? 'Update' : 'Create'} Building
+            <Button
+              onClick={editMode ? handleUpdateBuilding : handleCreateBuilding}
+              disabled={createBuildingMutation.isPending || updateBuildingMutation.isPending}
+            >
+              {editMode ? 'Update' : 'Create'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -683,32 +854,13 @@ const ParkingLotManagement = () => {
       <Dialog open={floorDialog} onOpenChange={setFloorDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{editMode ? 'Edit Floor' : 'Create Floor'}</DialogTitle>
+            <DialogTitle>{editMode ? 'Edit Floor' : 'Create New Floor'}</DialogTitle>
             <DialogDescription>
-              {editMode ? 'Update floor information' : 'Add a new floor to a building'}
+              {editMode ? 'Update floor details' : 'Add a new floor to a building'}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="floorBuilding">Building</Label>
-              <Select
-                value={floorForm.buildingId}
-                onValueChange={(value) => setFloorForm({ ...floorForm, buildingId: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a building" />
-                </SelectTrigger>
-                <SelectContent>
-                  {buildings?.map((building: any) => (
-                    <SelectItem key={building.id} value={building.id}>
-                      {building.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
             <div className="space-y-2">
               <Label htmlFor="floorNumber">Floor Number</Label>
               <Input
@@ -717,43 +869,85 @@ const ParkingLotManagement = () => {
                 min="1"
                 value={floorForm.floorNumber}
                 onChange={(e) => setFloorForm({ ...floorForm, floorNumber: parseInt(e.target.value) })}
+                disabled={createFloorMutation.isPending || updateFloorMutation.isPending}
               />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="floorBuilding">Building</Label>
+              <Select
+                value={floorForm.buildingId}
+                onValueChange={(value) => setFloorForm({ ...floorForm, buildingId: value })}
+              >
+                <SelectTrigger id="floorBuilding">
+                  <SelectValue placeholder="Select building" />
+                </SelectTrigger>
+                <SelectContent>
+                  {allBuildings?.map((building: any) => (
+                    <SelectItem key={building.id} value={building.id}>
+                      {building.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setFloorDialog(false)}>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setFloorDialog(false);
+                setEditMode(false);
+                setFloorForm({ floorNumber: 1, buildingId: '' });
+              }}
+              disabled={createFloorMutation.isPending || updateFloorMutation.isPending}
+            >
               Cancel
             </Button>
-            <Button onClick={editMode ? handleUpdateFloor : handleCreateFloor}>
-              {editMode ? 'Update' : 'Create'} Floor
+            <Button
+              onClick={editMode ? handleUpdateFloor : handleCreateFloor}
+              disabled={createFloorMutation.isPending || updateFloorMutation.isPending}
+            >
+              {editMode ? 'Update' : 'Create'}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      {/* Spot Dialog */}
+      {/* Parking Spot Dialog */}
       <Dialog open={spotDialog} onOpenChange={setSpotDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{editMode ? 'Edit Parking Spot' : 'Create Parking Spot'}</DialogTitle>
+            <DialogTitle>{editMode ? 'Edit Parking Spot' : 'Create New Parking Spot'}</DialogTitle>
             <DialogDescription>
-              {editMode ? 'Update parking spot details' : 'Add a new parking spot'}
+              {editMode ? 'Update parking spot details' : 'Add a new parking spot to a floor'}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="spotNumber">Spot Number</Label>
+              <Input
+                id="spotNumber"
+                placeholder="A1"
+                value={spotForm.spotNumber}
+                onChange={(e) => setSpotForm({ ...spotForm, spotNumber: e.target.value })}
+                disabled={createSpotMutation.isPending || updateSpotMutation.isPending}
+              />
+            </div>
+
             <div className="space-y-2">
               <Label htmlFor="spotFloor">Floor</Label>
               <Select
                 value={spotForm.floorId}
                 onValueChange={(value) => setSpotForm({ ...spotForm, floorId: value })}
               >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a floor" />
+                <SelectTrigger id="spotFloor">
+                  <SelectValue placeholder="Select floor" />
                 </SelectTrigger>
                 <SelectContent>
-                  {floors?.map((floor: any) => (
+                  {allFloors?.map((floor: any) => (
                     <SelectItem key={floor.id} value={floor.id}>
                       {floor.buildingName} - Floor {floor.floorNumber}
                     </SelectItem>
@@ -763,23 +957,13 @@ const ParkingLotManagement = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="spotNumber">Spot Number</Label>
-              <Input
-                id="spotNumber"
-                placeholder="A1, B2, etc."
-                value={spotForm.spotNumber}
-                onChange={(e) => setSpotForm({ ...spotForm, spotNumber: e.target.value })}
-              />
-            </div>
-
-            <div className="space-y-2">
               <Label htmlFor="spotType">Type</Label>
               <Select
                 value={spotForm.type}
                 onValueChange={(value) => setSpotForm({ ...spotForm, type: value })}
               >
-                <SelectTrigger>
-                  <SelectValue />
+                <SelectTrigger id="spotType">
+                  <SelectValue placeholder="Select type" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="STANDARD">Standard</SelectItem>
@@ -795,8 +979,8 @@ const ParkingLotManagement = () => {
                 value={spotForm.status}
                 onValueChange={(value) => setSpotForm({ ...spotForm, status: value })}
               >
-                <SelectTrigger>
-                  <SelectValue />
+                <SelectTrigger id="spotStatus">
+                  <SelectValue placeholder="Select status" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="AVAILABLE">Available</SelectItem>
@@ -809,11 +993,22 @@ const ParkingLotManagement = () => {
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setSpotDialog(false)}>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setSpotDialog(false);
+                setEditMode(false);
+                setSpotForm({ spotNumber: '', type: 'STANDARD', status: 'AVAILABLE', floorId: '' });
+              }}
+              disabled={createSpotMutation.isPending || updateSpotMutation.isPending}
+            >
               Cancel
             </Button>
-            <Button onClick={editMode ? handleUpdateSpot : handleCreateSpot}>
-              {editMode ? 'Update' : 'Create'} Spot
+            <Button
+              onClick={editMode ? handleUpdateSpot : handleCreateSpot}
+              disabled={createSpotMutation.isPending || updateSpotMutation.isPending}
+            >
+              {editMode ? 'Update' : 'Create'}
             </Button>
           </DialogFooter>
         </DialogContent>

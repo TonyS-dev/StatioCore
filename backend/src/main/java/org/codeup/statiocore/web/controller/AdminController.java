@@ -17,6 +17,7 @@ import org.codeup.statiocore.exception.BadRequestException;
 import org.codeup.statiocore.repository.IActivityLogRepository;
 import org.codeup.statiocore.repository.IUserRepository;
 import org.codeup.statiocore.service.IAdminService;
+import org.codeup.statiocore.service.IActivityLogService;
 import org.codeup.statiocore.web.dto.auth.RegisterRequest;
 import org.codeup.statiocore.web.dto.common.PageResponse;
 import org.codeup.statiocore.web.dto.admin.*;
@@ -27,6 +28,7 @@ import org.codeup.statiocore.web.mapper.UserMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -35,9 +37,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.http.HttpStatus;
 
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -98,7 +101,7 @@ public class AdminController {
     private final PasswordEncoder passwordEncoder;
     private final ActivityLogMapper activityLogMapper;
     private final UserMapper userMapper;
-    private final org.codeup.statiocore.service.IActivityLogService activityLogService;
+    private final IActivityLogService activityLogService;
 
     /**
      * Get comprehensive admin dashboard with system-wide statistics.
@@ -162,9 +165,57 @@ public class AdminController {
         @ApiResponse(responseCode = "401", description = "Unauthorized"),
         @ApiResponse(responseCode = "403", description = "Forbidden - requires ADMIN role")
     })
-    public ResponseEntity<java.util.List<BuildingResponse>> getBuildings() {
+    public ResponseEntity<List<BuildingResponse>> getBuildings() {
         // Returns all buildings with aggregated counts used by admin UI
         return ResponseEntity.ok(adminService.getAllBuildings());
+    }
+
+    /**
+     * Get paginated buildings with floor and spot statistics.
+     *
+     * Returns paginated list of buildings with:
+     * - Building details (name, address, total floors)
+     * - Aggregated spot counts (total, occupied, available)
+     * - Created timestamp
+     * - Pagination metadata
+     *
+     * @param page Page number (zero-based, default: 0)
+     * @param size Page size (default: 20, max: 100)
+     * @return PageResponse with building list and pagination metadata
+     */
+    @GetMapping("/buildings/paginated")
+    @Operation(
+        summary = "Get paginated buildings",
+        description = "Retrieve paginated list of buildings with floor counts and spot statistics for admin management"
+    )
+    @ApiResponses({
+        @ApiResponse(
+            responseCode = "200",
+            description = "Buildings retrieved successfully",
+            content = @Content(mediaType = "application/json")
+        ),
+        @ApiResponse(responseCode = "400", description = "Invalid pagination parameters"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized"),
+        @ApiResponse(responseCode = "403", description = "Forbidden - requires ADMIN role")
+    })
+    public ResponseEntity<PageResponse<BuildingResponse>> getBuildingsPaginated(
+            @Parameter(description = "Page number (zero-based)", example = "0")
+            @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "Page size (max: 100)", example = "20")
+            @RequestParam(defaultValue = "20") int size) {
+        // Paginated buildings with aggregated counts, ordered by creation date descending
+        Pageable pageable = PageRequest.of(page, Math.min(size, 100), Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<BuildingResponse> buildingsPage = adminService.getBuildingsPaginated(pageable);
+
+        PageResponse<BuildingResponse> response = PageResponse.<BuildingResponse>builder()
+                .items(buildingsPage.getContent())
+                .page(page)
+                .size(size)
+                .totalElements(buildingsPage.getTotalElements())
+                .totalPages(buildingsPage.getTotalPages())
+                .build();
+
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -264,28 +315,28 @@ public class AdminController {
         Pageable pageable = PageRequest.of(page, size);
         
         // Parse userId if provided
-        java.util.UUID userUuid = null;
+        UUID userUuid = null;
         if (userId != null && !userId.isEmpty()) {
             try {
-                userUuid = java.util.UUID.fromString(userId);
+                userUuid = UUID.fromString(userId);
             } catch (IllegalArgumentException e) {
                 // Invalid UUID, ignore filter
             }
         }
         
         // Parse dates if provided
-        java.time.LocalDate start = null;
-        java.time.LocalDate end = null;
+        LocalDate start = null;
+        LocalDate end = null;
         if (startDate != null && !startDate.isEmpty()) {
             try {
-                start = java.time.LocalDate.parse(startDate);
+                start = LocalDate.parse(startDate);
             } catch (Exception e) {
                 // Invalid date, ignore filter
             }
         }
         if (endDate != null && !endDate.isEmpty()) {
             try {
-                end = java.time.LocalDate.parse(endDate);
+                end = LocalDate.parse(endDate);
             } catch (Exception e) {
                 // Invalid date, ignore filter
             }
@@ -724,8 +775,44 @@ public class AdminController {
     @GetMapping("/floors")
     @Operation(summary = "Get all floors", description = "Retrieve all floors with spot statistics")
     @ApiResponse(responseCode = "200", description = "Floors retrieved successfully")
-    public ResponseEntity<java.util.List<FloorResponse>> getAllFloors() {
+    public ResponseEntity<List<FloorResponse>> getAllFloors() {
         return ResponseEntity.ok(adminService.getAllFloors());
+    }
+
+    /**
+     * Get paginated floors across all buildings.
+     *
+     * @param page Page number (zero-based, default: 0)
+     * @param size Page size (default: 20, max: 100)
+     * @return PageResponse with floors and pagination metadata
+     */
+    @GetMapping("/floors/paginated")
+    @Operation(
+        summary = "Get paginated floors",
+        description = "Retrieve paginated list of all floors with spot statistics"
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Floors retrieved successfully"),
+        @ApiResponse(responseCode = "400", description = "Invalid pagination parameters")
+    })
+    public ResponseEntity<PageResponse<FloorResponse>> getFloorsPaginated(
+            @Parameter(description = "Page number (zero-based)", example = "0")
+            @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "Page size (max: 100)", example = "20")
+            @RequestParam(defaultValue = "20") int size) {
+        // Floors are sorted by service: building by most recent floor creation DESC, floors within building by number ASC
+        Pageable pageable = PageRequest.of(page, Math.min(size, 100));
+        Page<FloorResponse> floorsPage = adminService.getFloorsPaginated(pageable);
+
+        PageResponse<FloorResponse> response = PageResponse.<FloorResponse>builder()
+                .items(floorsPage.getContent())
+                .page(page)
+                .size(size)
+                .totalElements(floorsPage.getTotalElements())
+                .totalPages(floorsPage.getTotalPages())
+                .build();
+
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -795,8 +882,44 @@ public class AdminController {
     @GetMapping("/spots")
     @Operation(summary = "Get all parking spots", description = "Retrieve all spots with status and type information")
     @ApiResponse(responseCode = "200", description = "Spots retrieved successfully")
-    public ResponseEntity<java.util.List<SpotResponse>> getAllSpots() {
+    public ResponseEntity<List<SpotResponse>> getAllSpots() {
         return ResponseEntity.ok(adminService.getAllSpots());
+    }
+
+    /**
+     * Get paginated parking spots across all floors.
+     *
+     * @param page Page number (zero-based, default: 0)
+     * @param size Page size (default: 20, max: 100)
+     * @return PageResponse with spots and pagination metadata
+     */
+    @GetMapping("/spots/paginated")
+    @Operation(
+        summary = "Get paginated parking spots",
+        description = "Retrieve paginated list of all spots with status and type information"
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Spots retrieved successfully"),
+        @ApiResponse(responseCode = "400", description = "Invalid pagination parameters")
+    })
+    public ResponseEntity<PageResponse<SpotResponse>> getSpotsPaginated(
+            @Parameter(description = "Page number (zero-based)", example = "0")
+            @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "Page size (max: 100)", example = "20")
+            @RequestParam(defaultValue = "20") int size) {
+        // Paginated spots ordered by creation date descending (newest first)
+        Pageable pageable = PageRequest.of(page, Math.min(size, 100), Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<SpotResponse> spotsPage = adminService.getSpotsPaginated(pageable);
+
+        PageResponse<SpotResponse> response = PageResponse.<SpotResponse>builder()
+                .items(spotsPage.getContent())
+                .page(page)
+                .size(size)
+                .totalElements(spotsPage.getTotalElements())
+                .totalPages(spotsPage.getTotalPages())
+                .build();
+
+        return ResponseEntity.ok(response);
     }
 
     /**

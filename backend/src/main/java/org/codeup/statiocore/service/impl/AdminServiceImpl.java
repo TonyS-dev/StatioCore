@@ -1,10 +1,23 @@
 package org.codeup.statiocore.service.impl;
 
+import java.time.OffsetDateTime;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.codeup.statiocore.domain.Building;
+import org.codeup.statiocore.domain.Floor;
+import org.codeup.statiocore.domain.ParkingSpot;
 import org.codeup.statiocore.domain.User;
+import org.codeup.statiocore.domain.enums.PaymentStatus;
 import org.codeup.statiocore.domain.enums.Role;
 import org.codeup.statiocore.domain.enums.SpotStatus;
+import org.codeup.statiocore.domain.enums.SpotType;
 import org.codeup.statiocore.domain.enums.SessionStatus;
+import org.codeup.statiocore.exception.BadRequestException;
 import org.codeup.statiocore.repository.IBuildingRepository;
 import org.codeup.statiocore.repository.IFloorRepository;
 import org.codeup.statiocore.repository.IParkingSpotRepository;
@@ -12,25 +25,25 @@ import org.codeup.statiocore.repository.IUserRepository;
 import org.codeup.statiocore.repository.IPaymentRepository;
 import org.codeup.statiocore.repository.IParkingSessionRepository;
 import org.codeup.statiocore.repository.IReservationRepository;
-import org.codeup.statiocore.domain.enums.PaymentStatus;
 import org.codeup.statiocore.service.IActivityLogService;
 import org.codeup.statiocore.service.IAdminService;
 import org.codeup.statiocore.web.dto.admin.AdminDashboardResponse;
-import org.codeup.statiocore.web.dto.admin.BuildingResponse;
 import org.codeup.statiocore.web.dto.admin.BuildingRequest;
-import org.codeup.statiocore.web.dto.admin.FloorResponse;
+import org.codeup.statiocore.web.dto.admin.BuildingResponse;
 import org.codeup.statiocore.web.dto.admin.FloorRequest;
-import org.codeup.statiocore.web.dto.admin.SpotResponse;
+import org.codeup.statiocore.web.dto.admin.FloorResponse;
 import org.codeup.statiocore.web.dto.admin.SpotRequest;
+import org.codeup.statiocore.web.dto.admin.SpotResponse;
 import org.codeup.statiocore.web.mapper.BuildingMapper;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -102,6 +115,20 @@ public class AdminServiceImpl implements IAdminService {
     }
 
     @Override
+    public void deactivateUser(UUID userId, User currentUser) {
+        if (currentUser.getId().equals(userId) && currentUser.getRole() == Role.ADMIN) {
+            throw new BadRequestException("An admin cannot deactivate their own account.");
+        }
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BadRequestException("User not found"));
+        user.setIsActive(false);
+        userRepository.save(user);
+
+        activityLogService.log(currentUser, "USER_DEACTIVATED",
+                String.format("Admin %s deactivated user %s", currentUser.getEmail(), user.getEmail()));
+    }
+
+    @Override
     public List<BuildingResponse> getAllBuildings() {
         return buildingRepository.findAll().stream()
             .map(building -> {
@@ -122,11 +149,11 @@ public class AdminServiceImpl implements IAdminService {
 
     @Override
     public BuildingResponse createBuilding(BuildingRequest request) {
-        org.codeup.statiocore.domain.Building building = org.codeup.statiocore.domain.Building.builder()
+        Building building = Building.builder()
             .name(request.getName())
             .address(request.getAddress())
-            .createdAt(java.time.OffsetDateTime.now())
-            .updatedAt(java.time.OffsetDateTime.now())
+            .createdAt(OffsetDateTime.now())
+            .updatedAt(OffsetDateTime.now())
             .build();
         
         building = buildingRepository.save(building);
@@ -135,12 +162,12 @@ public class AdminServiceImpl implements IAdminService {
 
     @Override
     public BuildingResponse updateBuilding(UUID buildingId, BuildingRequest request) {
-        org.codeup.statiocore.domain.Building building = buildingRepository.findById(buildingId)
-            .orElseThrow(() -> new org.codeup.statiocore.exception.BadRequestException("Building not found"));
+        Building building = buildingRepository.findById(buildingId)
+            .orElseThrow(() -> new BadRequestException("Building not found"));
         
         building.setName(request.getName());
         building.setAddress(request.getAddress());
-        building.setUpdatedAt(java.time.OffsetDateTime.now());
+        building.setUpdatedAt(OffsetDateTime.now());
         building = buildingRepository.save(building);
         
         return buildingMapper.toResponse(building);
@@ -148,9 +175,32 @@ public class AdminServiceImpl implements IAdminService {
 
     @Override
     public void deleteBuilding(UUID buildingId) {
-        org.codeup.statiocore.domain.Building building = buildingRepository.findById(buildingId)
-            .orElseThrow(() -> new org.codeup.statiocore.exception.BadRequestException("Building not found"));
+        Building building = buildingRepository.findById(buildingId)
+            .orElseThrow(() -> new BadRequestException("Building not found"));
         buildingRepository.delete(building);
+    }
+
+    @Override
+    public Page<BuildingResponse> getBuildingsPaginated(Pageable pageable) {
+        Page<Building> buildingsPage = buildingRepository.findAll(pageable);
+        
+        List<BuildingResponse> content = buildingsPage.getContent().stream()
+            .map(building -> {
+                long floorCount = floorRepository.countByBuildingId(building.getId());
+                long spotCount = parkingSpotRepository.countByFloorBuildingId(building.getId());
+                long occupiedCount = parkingSpotRepository.countByFloorBuildingIdAndStatus(building.getId(), SpotStatus.OCCUPIED);
+                long availableCount = parkingSpotRepository.countByFloorBuildingIdAndStatus(building.getId(), SpotStatus.AVAILABLE);
+
+                BuildingResponse response = buildingMapper.toResponse(building);
+                response.setTotalFloors((int) floorCount);
+                response.setTotalSpots((int) spotCount);
+                response.setOccupiedSpots((int) occupiedCount);
+                response.setAvailableSpots((int) availableCount);
+                return response;
+            })
+            .toList();
+        
+        return new PageImpl<>(content, pageable, buildingsPage.getTotalElements());
     }
 
     @Override
@@ -172,15 +222,15 @@ public class AdminServiceImpl implements IAdminService {
 
     @Override
     public FloorResponse createFloor(FloorRequest request) {
-        org.codeup.statiocore.domain.Building building = buildingRepository.findById(request.getBuildingId())
-            .orElseThrow(() -> new org.codeup.statiocore.exception.BadRequestException("Building not found"));
+        Building building = buildingRepository.findById(request.getBuildingId())
+            .orElseThrow(() -> new BadRequestException("Building not found"));
         
-        org.codeup.statiocore.domain.Floor floor = org.codeup.statiocore.domain.Floor.builder()
+        Floor floor = Floor.builder()
             .building(building)
             .floorNumber(request.getFloorNumber())
             .capacity(0)
-            .createdAt(java.time.OffsetDateTime.now())
-            .updatedAt(java.time.OffsetDateTime.now())
+            .createdAt(OffsetDateTime.now())
+            .updatedAt(OffsetDateTime.now())
             .build();
         
         floor = floorRepository.save(floor);
@@ -197,15 +247,15 @@ public class AdminServiceImpl implements IAdminService {
 
     @Override
     public FloorResponse updateFloor(UUID floorId, FloorRequest request) {
-        org.codeup.statiocore.domain.Floor floor = floorRepository.findById(floorId)
-            .orElseThrow(() -> new org.codeup.statiocore.exception.BadRequestException("Floor not found"));
+        Floor floor = floorRepository.findById(floorId)
+            .orElseThrow(() -> new BadRequestException("Floor not found"));
         
-        org.codeup.statiocore.domain.Building building = buildingRepository.findById(request.getBuildingId())
-            .orElseThrow(() -> new org.codeup.statiocore.exception.BadRequestException("Building not found"));
+        Building building = buildingRepository.findById(request.getBuildingId())
+            .orElseThrow(() -> new BadRequestException("Building not found"));
         
         floor.setBuilding(building);
         floor.setFloorNumber(request.getFloorNumber());
-        floor.setUpdatedAt(java.time.OffsetDateTime.now());
+        floor.setUpdatedAt(OffsetDateTime.now());
         floor = floorRepository.save(floor);
         
         long spotCount = parkingSpotRepository.countByFloorId(floor.getId());
@@ -222,9 +272,63 @@ public class AdminServiceImpl implements IAdminService {
 
     @Override
     public void deleteFloor(UUID floorId) {
-        org.codeup.statiocore.domain.Floor floor = floorRepository.findById(floorId)
-            .orElseThrow(() -> new org.codeup.statiocore.exception.BadRequestException("Floor not found"));
+        Floor floor = floorRepository.findById(floorId)
+            .orElseThrow(() -> new BadRequestException("Floor not found"));
         floorRepository.delete(floor);
+    }
+
+    @Override
+    public Page<FloorResponse> getFloorsPaginated(Pageable pageable) {
+        // Get all floors with eager loading
+        List<Floor> allFloors = floorRepository.findAll();
+        
+        // Convert to FloorResponse and group by building
+        Map<String, List<FloorResponse>> floorsByBuilding = allFloors.stream()
+            .map(floor -> {
+                long spotCount = parkingSpotRepository.countByFloorId(floor.getId());
+                return FloorResponse.builder()
+                    .id(floor.getId())
+                    .buildingId(floor.getBuilding().getId())
+                    .buildingName(floor.getBuilding().getName())
+                    .floorNumber(floor.getFloorNumber())
+                    .spotCount((int) spotCount)
+                    .createdAt(floor.getCreatedAt())
+                    .build();
+            })
+            .collect(Collectors.groupingBy(
+                FloorResponse::getBuildingName,
+                LinkedHashMap::new,
+                Collectors.toList()
+            ));
+        
+        // Sort buildings by their most recent floor creation date (DESC)
+        List<String> buildingNamesOrdered = floorsByBuilding.entrySet().stream()
+            .sorted((a, b) -> {
+                OffsetDateTime maxA = a.getValue().stream()
+                    .map(FloorResponse::getCreatedAt)
+                    .max(OffsetDateTime::compareTo)
+                    .orElse(OffsetDateTime.now());
+                OffsetDateTime maxB = b.getValue().stream()
+                    .map(FloorResponse::getCreatedAt)
+                    .max(OffsetDateTime::compareTo)
+                    .orElse(OffsetDateTime.now());
+                return maxB.compareTo(maxA); // DESC
+            })
+            .map(Map.Entry::getKey)
+            .collect(Collectors.toList());
+        
+        // Flatten: for each building (in order), add its floors sorted by floor number
+        List<FloorResponse> sortedFloors = buildingNamesOrdered.stream()
+            .flatMap(buildingName -> floorsByBuilding.get(buildingName).stream()
+                .sorted(Comparator.comparingInt(FloorResponse::getFloorNumber)))
+            .collect(Collectors.toList());
+        
+        // Apply pagination
+        int start = (int) pageable.getOffset();
+        int end = Math.min(start + pageable.getPageSize(), sortedFloors.size());
+        
+        List<FloorResponse> pageContent = sortedFloors.subList(start, Math.max(start, end));
+        return new PageImpl<>(pageContent, pageable, sortedFloors.size());
     }
 
     @Override
@@ -250,26 +354,26 @@ public class AdminServiceImpl implements IAdminService {
     public SpotResponse createSpot(SpotRequest request) {
         // Validate RESERVED status requires a user
         if ("RESERVED".equals(request.getStatus()) && request.getReservedByUserId() == null) {
-            throw new org.codeup.statiocore.exception.BadRequestException("Reserved spots must have a user assigned");
+            throw new BadRequestException("Reserved spots must have a user assigned");
         }
         
-        org.codeup.statiocore.domain.Floor floor = floorRepository.findById(request.getFloorId())
-            .orElseThrow(() -> new org.codeup.statiocore.exception.BadRequestException("Floor not found"));
+        Floor floor = floorRepository.findById(request.getFloorId())
+            .orElseThrow(() -> new BadRequestException("Floor not found"));
         
         User reservedByUser = null;
         if (request.getReservedByUserId() != null) {
             reservedByUser = userRepository.findById(request.getReservedByUserId())
-                .orElseThrow(() -> new org.codeup.statiocore.exception.BadRequestException("User not found"));
+                .orElseThrow(() -> new BadRequestException("User not found"));
         }
         
-        org.codeup.statiocore.domain.ParkingSpot spot = org.codeup.statiocore.domain.ParkingSpot.builder()
+        ParkingSpot spot = ParkingSpot.builder()
             .floor(floor)
             .spotNumber(request.getSpotNumber())
-            .type(org.codeup.statiocore.domain.enums.SpotType.valueOf(request.getType()))
-            .status(org.codeup.statiocore.domain.enums.SpotStatus.valueOf(request.getStatus()))
+            .type(SpotType.valueOf(request.getType()))
+            .status(SpotStatus.valueOf(request.getStatus()))
             .reservedBy(reservedByUser)
-            .createdAt(java.time.OffsetDateTime.now())
-            .updatedAt(java.time.OffsetDateTime.now())
+            .createdAt(OffsetDateTime.now())
+            .updatedAt(OffsetDateTime.now())
             .build();
         
         spot = parkingSpotRepository.save(spot);
@@ -293,26 +397,26 @@ public class AdminServiceImpl implements IAdminService {
     public SpotResponse updateSpot(UUID spotId, SpotRequest request) {
         // Validate RESERVED status requires a user
         if ("RESERVED".equals(request.getStatus()) && request.getReservedByUserId() == null) {
-            throw new org.codeup.statiocore.exception.BadRequestException("Reserved spots must have a user assigned");
+            throw new BadRequestException("Reserved spots must have a user assigned");
         }
-        org.codeup.statiocore.domain.ParkingSpot spot = parkingSpotRepository.findById(spotId)
-            .orElseThrow(() -> new org.codeup.statiocore.exception.BadRequestException("Parking spot not found"));
+        ParkingSpot spot = parkingSpotRepository.findById(spotId)
+            .orElseThrow(() -> new BadRequestException("Parking spot not found"));
         
-        org.codeup.statiocore.domain.Floor floor = floorRepository.findById(request.getFloorId())
-            .orElseThrow(() -> new org.codeup.statiocore.exception.BadRequestException("Floor not found"));
+        Floor floor = floorRepository.findById(request.getFloorId())
+            .orElseThrow(() -> new BadRequestException("Floor not found"));
         
         User reservedByUser = null;
         if (request.getReservedByUserId() != null) {
             reservedByUser = userRepository.findById(request.getReservedByUserId())
-                .orElseThrow(() -> new org.codeup.statiocore.exception.BadRequestException("User not found"));
+                .orElseThrow(() -> new BadRequestException("User not found"));
         }
         
         spot.setFloor(floor);
         spot.setSpotNumber(request.getSpotNumber());
-        spot.setType(org.codeup.statiocore.domain.enums.SpotType.valueOf(request.getType()));
-        spot.setStatus(org.codeup.statiocore.domain.enums.SpotStatus.valueOf(request.getStatus()));
+        spot.setType(SpotType.valueOf(request.getType()));
+        spot.setStatus(SpotStatus.valueOf(request.getStatus()));
         spot.setReservedBy(reservedByUser);
-        spot.setUpdatedAt(java.time.OffsetDateTime.now());
+        spot.setUpdatedAt(OffsetDateTime.now());
         spot = parkingSpotRepository.save(spot);
         
         return SpotResponse.builder()
@@ -332,8 +436,31 @@ public class AdminServiceImpl implements IAdminService {
 
     @Override
     public void deleteSpot(UUID spotId) {
-        org.codeup.statiocore.domain.ParkingSpot spot = parkingSpotRepository.findById(spotId)
-            .orElseThrow(() -> new org.codeup.statiocore.exception.BadRequestException("Parking spot not found"));
+        ParkingSpot spot = parkingSpotRepository.findById(spotId)
+            .orElseThrow(() -> new BadRequestException("Parking spot not found"));
         parkingSpotRepository.delete(spot);
+    }
+
+    @Override
+    public Page<SpotResponse> getSpotsPaginated(Pageable pageable) {
+        Page<ParkingSpot> spotsPage = parkingSpotRepository.findAllWithFloorAndBuilding(pageable);
+        
+        List<SpotResponse> content = spotsPage.getContent().stream()
+            .map(spot -> SpotResponse.builder()
+                .id(spot.getId())
+                .floorId(spot.getFloor().getId())
+                .floorNumber(spot.getFloor().getFloorNumber())
+                .buildingName(spot.getFloor().getBuilding().getName())
+                .spotNumber(spot.getSpotNumber())
+                .type(spot.getType().name())
+                .status(spot.getStatus().name())
+                .reservedByUserId(spot.getReservedBy() != null ? spot.getReservedBy().getId() : null)
+                .reservedByUserName(spot.getReservedBy() != null ? spot.getReservedBy().getFullName() : null)
+                .createdAt(spot.getCreatedAt())
+                .updatedAt(spot.getUpdatedAt())
+                .build())
+            .toList();
+        
+        return new PageImpl<>(content, pageable, spotsPage.getTotalElements());
     }
 }
