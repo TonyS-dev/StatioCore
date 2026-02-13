@@ -198,17 +198,17 @@ const AvailableSpots = () => {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Available Parking Spots</h1>
-        <p className="text-gray-600 mt-2">Find and select a spot to check-in or reserve</p>
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Available Parking Spots</h1>
+        <p className="text-sm sm:text-base text-gray-600 mt-2">Find and select a spot to check-in or reserve</p>
       </div>
 
       {/* Active Session Alert */}
       {activeSession && (
         <Card className="border-teal-500 bg-teal-50">
           <CardContent className="py-4">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
               <div className="flex items-center space-x-3">
-                <AlertCircle className="h-5 w-5 text-teal-600" />
+                <AlertCircle className="h-5 w-5 text-teal-600 flex-shrink-0" />
                 <div>
                   <p className="font-semibold text-teal-900">You have an active parking session</p>
                   <p className="text-sm text-teal-700">
@@ -219,6 +219,7 @@ const AvailableSpots = () => {
               <Button
                 size="sm"
                 onClick={() => navigateWithAnimation(navigate, '/user/parking-management', { state: { action: 'checkout' } })}
+                className="w-full sm:w-auto"
               >
                 Go to Checkout
               </Button>
@@ -385,7 +386,7 @@ const AvailableSpots = () => {
                 {totalPages > 1 && (
                   <Card>
                     <CardContent className="py-4">
-                      <div className="flex items-center justify-between">
+                      <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
                         <div className="text-sm text-gray-600">
                           Page <span className="font-semibold">{currentPage}</span> of{' '}
                           <span className="font-semibold">{totalPages}</span> ({spots.length} total spots)
@@ -397,22 +398,30 @@ const AvailableSpots = () => {
                             onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                             disabled={currentPage === 1}
                           >
-                            ← Previous
+                            ←
                           </Button>
 
-                          {/* Page Numbers */}
+                          {/* Page Numbers - show limited on mobile */}
                           <div className="flex items-center space-x-1">
-                            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                              <Button
-                                key={page}
-                                variant={page === currentPage ? 'default' : 'outline'}
-                                size="sm"
-                                onClick={() => setCurrentPage(page)}
-                                className="min-w-10"
-                              >
-                                {page}
-                              </Button>
-                            ))}
+                            {Array.from({ length: totalPages }, (_, i) => i + 1)
+                              .filter((page) => {
+                                // On small screens show fewer page buttons
+                                if (totalPages <= 5) return true;
+                                return page === 1 || page === totalPages || Math.abs(page - currentPage) <= 1;
+                              })
+                              .map((page, idx, arr) => (
+                                <span key={page} className="flex items-center space-x-1">
+                                  {idx > 0 && arr[idx - 1] !== page - 1 && <span className="text-gray-400">...</span>}
+                                  <Button
+                                    variant={page === currentPage ? 'default' : 'outline'}
+                                    size="sm"
+                                    onClick={() => setCurrentPage(page)}
+                                    className="min-w-8 sm:min-w-10"
+                                  >
+                                    {page}
+                                  </Button>
+                                </span>
+                              ))}
                           </div>
 
                           <Button
@@ -421,7 +430,7 @@ const AvailableSpots = () => {
                             onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                             disabled={currentPage === totalPages}
                           >
-                            Next →
+                            →
                           </Button>
                         </div>
                       </div>

@@ -55,12 +55,12 @@ const LandingPage = () => {
 
       {/* Hero section */}
       <main className="flex-1">
-        <section className="max-w-6xl mx-auto px-4 py-16 grid gap-10 lg:grid-cols-2 items-center">
+        <section className="max-w-6xl mx-auto px-4 py-10 sm:py-16 grid gap-8 sm:gap-10 lg:grid-cols-2 items-center">
           <div className="space-y-6">
             <div className="inline-flex items-center rounded-full bg-teal-50 px-3 py-1 text-xs font-medium text-teal-700 border border-teal-100">
               Smart parking made simple
             </div>
-            <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-gray-900">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900">
               Manage your parking spaces
               <span className="block text-teal-600">without the chaos.</span>
             </h1>

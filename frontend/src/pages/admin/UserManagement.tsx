@@ -213,19 +213,19 @@ const UserManagement = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">User Management</h1>
-          <p className="text-gray-600 mt-2">Manage system users and administrators</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">User Management</h1>
+          <p className="text-sm sm:text-base text-gray-600 mt-1 sm:mt-2">Manage system users and administrators</p>
         </div>
-        <Button onClick={() => setCreateUserDialog(true)}>
+        <Button onClick={() => setCreateUserDialog(true)} className="w-full sm:w-auto">
           <UserPlus className="h-4 w-4 mr-2" />
           Create User
         </Button>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-gray-600">Total Users</CardTitle>
@@ -391,7 +391,7 @@ const UserManagement = () => {
                         {new Date(user.createdAt).toLocaleDateString()}
                       </TableCell>
                       <TableCell className="text-right">
-                        <div className="flex items-center justify-end space-x-2">
+                        <div className="flex flex-wrap items-center justify-end gap-2">
                           <Button
                             variant="outline"
                             size="sm"
@@ -434,11 +434,12 @@ const UserManagement = () => {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-between mt-4">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4">
               <Button
                 variant="outline"
                 onClick={() => setPage((p) => Math.max(0, p - 1))}
                 disabled={page === 0}
+                className="w-full sm:w-auto"
               >
                 Previous
               </Button>
@@ -449,6 +450,7 @@ const UserManagement = () => {
                 variant="outline"
                 onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
                 disabled={page === totalPages - 1}
+                className="w-full sm:w-auto"
               >
                 Next
               </Button>

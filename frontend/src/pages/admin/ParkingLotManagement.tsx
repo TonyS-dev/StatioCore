@@ -383,15 +383,15 @@ const ParkingLotManagement = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Parking Lot Management</h1>
-          <p className="text-gray-600 mt-2">Add, edit, and view Buildings, Floors, and Parking Spots</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Parking Lot Management</h1>
+          <p className="text-sm sm:text-base text-gray-600 mt-1 sm:mt-2">Add, edit, and view Buildings, Floors, and Parking Spots</p>
         </div>
       </div>
 
       {/* Summary Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-gray-600">Total Buildings</CardTitle>
@@ -512,11 +512,12 @@ const ParkingLotManagement = () => {
 
                   {/* Pagination */}
                   {totalBuildingPages > 1 && (
-                    <div className="flex items-center justify-between mt-4">
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4">
                       <Button
                         variant="outline"
                         onClick={() => setBuildingPage((p) => Math.max(0, p - 1))}
                         disabled={buildingPage === 0}
+                        className="w-full sm:w-auto"
                       >
                         Previous
                       </Button>
@@ -541,6 +542,7 @@ const ParkingLotManagement = () => {
                         variant="outline"
                         onClick={() => setBuildingPage((p) => Math.min(totalBuildingPages - 1, p + 1))}
                         disabled={buildingPage === totalBuildingPages - 1}
+                        className="w-full sm:w-auto"
                       >
                         Next
                       </Button>
@@ -624,11 +626,12 @@ const ParkingLotManagement = () => {
 
                   {/* Pagination */}
                   {totalFloorPages > 1 && (
-                    <div className="flex items-center justify-between mt-4">
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4">
                       <Button
                         variant="outline"
                         onClick={() => setFloorPage((p) => Math.max(0, p - 1))}
                         disabled={floorPage === 0}
+                        className="w-full sm:w-auto"
                       >
                         Previous
                       </Button>
@@ -653,6 +656,7 @@ const ParkingLotManagement = () => {
                         variant="outline"
                         onClick={() => setFloorPage((p) => Math.min(totalFloorPages - 1, p + 1))}
                         disabled={floorPage === totalFloorPages - 1}
+                        className="w-full sm:w-auto"
                       >
                         Next
                       </Button>
@@ -748,11 +752,12 @@ const ParkingLotManagement = () => {
 
                   {/* Pagination */}
                   {totalSpotPages > 1 && (
-                    <div className="flex items-center justify-between mt-4">
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4">
                       <Button
                         variant="outline"
                         onClick={() => setSpotPage((p) => Math.max(0, p - 1))}
                         disabled={spotPage === 0}
+                        className="w-full sm:w-auto"
                       >
                         Previous
                       </Button>
@@ -777,6 +782,7 @@ const ParkingLotManagement = () => {
                         variant="outline"
                         onClick={() => setSpotPage((p) => Math.min(totalSpotPages - 1, p + 1))}
                         disabled={spotPage === totalSpotPages - 1}
+                        className="w-full sm:w-auto"
                       >
                         Next
                       </Button>

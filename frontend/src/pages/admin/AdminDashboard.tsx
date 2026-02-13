@@ -115,12 +115,12 @@ const AdminDashboard = () => {
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-        <p className="text-gray-600 mt-2">System overview and analytics</p>
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+        <p className="text-sm sm:text-base text-gray-600 mt-2">System overview and analytics</p>
       </div>
 
       {/* Main Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
         {mainStats.map((stat, index) => {
           const Icon = stat.icon;
           return (
@@ -254,23 +254,20 @@ const AdminDashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {dashboard.recentActivity.slice(0, 10).map((activity, index) => (
-                <div
-                  key={index}
-                  className="flex items-start space-x-4 pb-4 border-b last:border-b-0"
-                >
+                {dashboard.recentActivity.slice(0, 10).map((activity) => (
+                <div className="flex items-start space-x-3 sm:space-x-4 pb-4 border-b last:border-b-0">
                   <div className="bg-teal-50 p-2 rounded-lg">
                     <Activity className="h-4 w-4 text-teal-600" />
                   </div>
-                  <div className="flex-1 space-y-1">
-                    <div className="flex items-center justify-between">
-                      <p className="text-sm font-medium">{activity.action}</p>
-                      <p className="text-xs text-gray-400">
+                  <div className="flex-1 min-w-0 space-y-1">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-0.5">
+                      <p className="text-sm font-medium truncate">{activity.action}</p>
+                      <p className="text-xs text-gray-400 flex-shrink-0">
                         {new Date(activity.createdAt).toLocaleString()}
                       </p>
                     </div>
-                    <p className="text-xs text-gray-600">{activity.userEmail}</p>
-                    <p className="text-xs text-gray-500">{activity.details}</p>
+                    <p className="text-xs text-gray-600 truncate">{activity.userEmail}</p>
+                    <p className="text-xs text-gray-500 truncate">{activity.details}</p>
                   </div>
                 </div>
               ))}
@@ -280,7 +277,7 @@ const AdminDashboard = () => {
       )}
 
       {/* Quick Stats Summary */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
         <Card>
           <CardHeader>
             <CardTitle className="text-sm">Total Reservations</CardTitle>

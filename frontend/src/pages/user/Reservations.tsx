@@ -311,8 +311,8 @@ const Reservations = () => {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Reservations</h1>
-        <p className="text-gray-600 mt-2">Reserve a parking spot for a specific time period</p>
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Reservations</h1>
+        <p className="text-sm sm:text-base text-gray-600 mt-2">Reserve a parking spot for a specific time period</p>
       </div>
 
       {/* My Active Reservations */}
@@ -330,9 +330,9 @@ const Reservations = () => {
               {activeReservations.map((reservation: Reservation) => (
                 <div
                   key={reservation.id}
-                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50"
+                  className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 border rounded-lg hover:bg-gray-50"
                 >
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     <div className="font-semibold text-lg">Spot {reservation.spotNumber}</div>
                     <div className="text-sm text-gray-600 flex items-center mt-1">
                       <MapPin className="h-3 w-3 mr-1" />
@@ -352,7 +352,7 @@ const Reservations = () => {
                     </div>
                   </div>
                   {/* Actions: Check In (when within 1 hour before start) and Cancel */}
-                  <div className="flex flex-col items-end space-y-2">
+                  <div className="flex flex-row sm:flex-col items-center sm:items-end gap-2">
                     <div className="flex space-x-2">
                       {(() => {
                         const startMs = new Date(reservation.startTime).getTime();
@@ -405,9 +405,9 @@ const Reservations = () => {
                 <CardDescription>You don't have any active reservations. Redirecting to Available Spots shortly.</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                   <div className="text-sm text-gray-700">Redirecting to Available Spots in <span className="font-semibold">{redirectCountdown}</span> seconds.</div>
-                  <div className="flex space-x-2">
+                  <div className="flex space-x-2 w-full sm:w-auto">
                     <Button onClick={() => navigateWithAnimation(navigate, '/user/spots')}>Go now</Button>
                     <Button variant="outline" onClick={() => setAutoRedirectCancelled(true)}>Cancel</Button>
                   </div>
@@ -491,7 +491,7 @@ const Reservations = () => {
                   </div>
                 </div>
               ) : spots && spots.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                   {spots.map((spot) => (
                     <Card
                       key={spot.id}

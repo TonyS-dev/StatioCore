@@ -45,19 +45,19 @@ const UserLayout = () => {
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
       <header className="bg-white border-b">
-        <div className="container mx-auto px-4 py-4">
+        <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <Car className="h-8 w-8 text-teal-600" />
-              <h1 className="text-2xl font-bold text-gray-900">Statio Core</h1>
+              <Car className="h-6 w-6 sm:h-8 sm:w-8 text-teal-600" />
+              <h1 className="text-lg sm:text-2xl font-bold text-gray-900">Statio Core</h1>
             </div>
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-600">
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              <span className="text-xs sm:text-sm text-gray-600 hidden sm:inline">
                 Welcome, <span className="font-semibold">{user?.fullName}</span>
               </span>
               <Button variant="outline" size="sm" onClick={handleLogout}>
-                <LogOut className="h-4 w-4 mr-2" />
-                Logout
+                <LogOut className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Logout</span>
               </Button>
             </div>
           </div>
@@ -66,62 +66,62 @@ const UserLayout = () => {
 
       {/* Navigation */}
       <nav className="sticky top-0 z-40 bg-white border-b">
-        <div className="container mx-auto px-4">
-          <div className="flex space-x-1">
+        <div className="container mx-auto px-2 sm:px-4">
+          <div className="flex space-x-0.5 sm:space-x-1 overflow-x-auto scrollbar-hide">
             <Link
               to="/user/dashboard"
               onClick={() => handleTabClick('/user/dashboard')}
-              className={`flex items-center px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
+              className={`flex items-center whitespace-nowrap px-2.5 sm:px-4 py-3 text-xs sm:text-sm font-medium border-b-2 transition-colors ${
                 isActivePath('/user/dashboard')
                   ? 'text-teal-600 bg-teal-50 border-teal-600'
                   : 'text-gray-700 border-transparent hover:text-teal-600 hover:bg-gray-50 hover:border-teal-600'
               }`}
             >
-              <LayoutDashboard className="h-4 w-4 mr-2" />
-              Dashboard
+              <LayoutDashboard className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Dashboard</span>
             </Link>
             <Link
               to="/user/spots"
               onClick={() => handleTabClick('/user/spots')}
-              className={`flex items-center px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
+              className={`flex items-center whitespace-nowrap px-2.5 sm:px-4 py-3 text-xs sm:text-sm font-medium border-b-2 transition-colors ${
                 isActivePath('/user/spots')
                   ? 'text-teal-600 bg-teal-50 border-teal-600'
                   : 'text-gray-700 border-transparent hover:text-teal-600 hover:bg-gray-50 hover:border-teal-600'
               }`}
             >
-              <ParkingCircle className="h-4 w-4 mr-2" />
-              Available Spots
+              <ParkingCircle className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Spots</span>
             </Link>
             <Link
               to="/user/reservations"
               onClick={() => handleTabClick('/user/reservations')}
-              className={`flex items-center px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
+              className={`flex items-center whitespace-nowrap px-2.5 sm:px-4 py-3 text-xs sm:text-sm font-medium border-b-2 transition-colors ${
                 isActivePath('/user/reservations')
                   ? 'text-teal-600 bg-teal-50 border-teal-600'
                   : 'text-gray-700 border-transparent hover:text-teal-600 hover:bg-gray-50 hover:border-teal-600'
               }`}
             >
-              <Calendar className="h-4 w-4 mr-2" />
-              Reservations
+              <Calendar className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Reservations</span>
             </Link>
             <Link
               to="/user/parking-management"
               onClick={() => handleTabClick('/user/parking-management')}
-              className={`flex items-center px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
+              className={`flex items-center whitespace-nowrap px-2.5 sm:px-4 py-3 text-xs sm:text-sm font-medium border-b-2 transition-colors ${
                 isActivePath('/user/parking-management') || isActivePath('/user/parking')
                   ? 'text-teal-600 bg-teal-50 border-teal-600'
                   : 'text-gray-700 border-transparent hover:text-teal-600 hover:bg-gray-50 hover:border-teal-600'
               }`}
             >
-              <LogIn className="h-4 w-4 mr-2" />
-              Parking Management
+              <LogIn className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Parking</span>
             </Link>
           </div>
         </div>
       </nav>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8 flex-1">
+      <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 flex-1">
         <Outlet />
       </main>
 

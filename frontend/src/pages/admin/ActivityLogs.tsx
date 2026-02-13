@@ -96,12 +96,12 @@ const ActivityLogs = () => {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Activity Logs</h1>
-        <p className="text-gray-600 mt-2">Monitor system activities and user actions</p>
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Activity Logs</h1>
+        <p className="text-sm sm:text-base text-gray-600 mt-2">Monitor system activities and user actions</p>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-gray-600">Total Logs</CardTitle>
@@ -152,7 +152,7 @@ const ActivityLogs = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             <div className="space-y-2">
               <Label htmlFor="actionFilter">Action Type</Label>
               <Input
@@ -299,11 +299,12 @@ const ActivityLogs = () => {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-between mt-4">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4">
               <Button
                 variant="outline"
                 onClick={() => setPage((p) => Math.max(0, p - 1))}
                 disabled={page === 0}
+                className="w-full sm:w-auto"
               >
                 Previous
               </Button>
@@ -328,6 +329,7 @@ const ActivityLogs = () => {
                 variant="outline"
                 onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
                 disabled={page === totalPages - 1}
+                className="w-full sm:w-auto"
               >
                 Next
               </Button>
